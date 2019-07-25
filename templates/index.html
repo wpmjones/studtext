@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    <title>St. Pete Texting App</title>
+</head>
+<body>
+    <div class="container">
+        <h2>St. Petersburg Text App</h2>
+        <form action="" method="post" role="form">
+            {{ form.csrf }}
+            <div class="form-group">
+                <label for="group">Group:</label>
+                <select class="form-control" id="group" name="group">
+                    <option value="staff">Staff</option>
+                    <option value="students">Students</option>
+                    <option value="band">Band</option>
+                    <option value="songsters">Songsters</option>
+                    <option value="tester">DEBUG</option>
+                </select>
+                <label for="msg">Message:</label>
+                <input type="textarea" class="form-control" rows="3" id="msg" name="msg" placeholder="Type message here">
+            </div>
+            <button type="submit" class="btn btn-success">
+                Submit
+            </button>
+        </form>
+        <br />
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "Error" not in message[1]: %}
+                        <div class="alert alert-info">
+                            <strong>Success! </strong> {{ message[1] }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            {{ message[1] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

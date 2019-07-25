@@ -1,4 +1,8 @@
-Flask==1.1.1
-PyYAML==5.1
-WTForms==2.2
-twilio==6.29.2
+Flask>=1.1.1
+PyYAML>=5.0
+WTForms>=2.2
+twilio>=6.29.2
+requests>=2.21.0
+oauthlib>=3.0.1
+pyOpenSSL>=19.0.0
+Flask-Login>=0.4.1

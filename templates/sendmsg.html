@@ -7,18 +7,20 @@
     <title>St. Pete Texting App</title>
 </head>
 <body>
+    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">St. Petersburg Text App</h2></div>
     <div class="container">
-        <h2>St. Petersburg Text App</h2>
         <form action="" method="post" role="form">
             {{ form.csrf }}
             <div class="form-group">
                 <label for="group">Group:</label>
                 <select class="form-control" id="group" name="group">
-                    <option value="staff">Staff</option>
                     <option value="students">Students</option>
+                    <option value="staff">Staff</option>
                     <option value="band">Band</option>
                     <option value="songsters">Songsters</option>
-                    <option value="tester">DEBUG</option>
+                    <option value="womens_bible">Women's Bible Study</option>
+                    <option value="home_league">Home League</option>
+                    <option value="testers">DEBUG</option>
                 </select>
                 <label for="msg">Message:</label>
                 <textarea class="form-control" id="msg" name="msg" rows="3" placeholder="Type message here"></textarea>
@@ -44,5 +46,6 @@
             {% endif %}
         {% endwith %}
     </div>
+    <div class="container"><a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a></div>
 </body>
 </html>

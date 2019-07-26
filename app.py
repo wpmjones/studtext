@@ -6,8 +6,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from oauthlib.oauth2 import WebApplicationClient
 from wtforms import Form, TextAreaField, SelectField, validators
 from twilio.rest import Client
-from db import init_db_command
-from user import User
+from db import init_db_command, User, Receipients
 from config import settings
 
 # Flask Configuration
@@ -39,66 +38,157 @@ except sqlite3.OperationalError:
 def load_user(user_id):
     return User.get(user_id)
 
+
+# Get Google Provider
+def get_google_provider_cfg():
+    return requests.get(google_discovery_url).json()
+
+
 sid = settings['twilio']['sid']
 token = settings['twilio']['token']
 twilio = Client(sid, token)
 
-choices = [("staff", "Staff"),
-           ("students", "Students"),
+choices = [("students", "Students"),
+           ("staff", "Staff"),
            ("band", "Band"),
            ("songsters", "Songsters"),
-           ("tester", "Debug")
+           ("womens_bible", "Women's Bible Study"),
+           ("home_league", "Home League"),
+           ("testers", "Debug"),
            ]
 
 
 class HomePage:
     @app.route("/")
-    def index(self):
+    def index():
         if current_user.is_authenticated:
-            # redirect to send_msg
-            return (f"<p>Welcome {current_user.name} You're logged in!<br>"
-                    f"Email: {current_user.email}</p>"
-                    f"<div><img src='{current_user.profile_pic}'</img></div>"
-                    f"<a class='button' href='/logout'>Log out</a>")
+            # return (f"<p>Welcome {current_user.name} You're logged in!<br>"
+            #         f"Email: {current_user.email}</p>"
+            #         f"<div><img src='{current_user.profile_pic}'</img></div>"
+            #         f"<a class='btn btn-default' href='/logout' role='button'>Log out</a>")
+            return redirect(url_for("sendmsg"))
         else:
-            return "<h2>St. Petersburg Text App</h2><a class='button' href='/login'>Google Login</a>"
+            return render_template("login.html")
+
+    @app.route("/login")
+    def login():
+        # Find out what URL to hit for Google login
+        google_provider_cfg = get_google_provider_cfg()
+        authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+
+        # Use library to construct the request for Google login and provide
+        # scopes that let you retrieve user's profile from Google
+        request_uri = client.prepare_request_uri(authorization_endpoint,
+                                                 redirect_uri=request.base_url + "/callback",
+                                                 scope=["openid", "email", "profile"],
+                                                 )
+        return redirect(request_uri)
+
+    @app.route("/login/callback")
+    def callback():
+        # Get authorization code Google sent back to you
+        code = request.args.get("code")
+        # Find out what URL to hit to get tokens that allow you to ask for
+        # things on behalf of a user
+        google_provider_cfg = get_google_provider_cfg()
+        token_endpoint = google_provider_cfg["token_endpoint"]
+        # Prepare and send a request to get tokens! Yay tokens!
+        token_url, headers, body = client.prepare_token_request(token_endpoint,
+                                                                authorization_response=request.url,
+                                                                redirect_url=request.base_url,
+                                                                code=code
+                                                                )
+        token_response = requests.post(token_url,
+                                       headers=headers,
+                                       data=body,
+                                       auth=(google_client_id, google_client_secret)
+                                       )
+
+        # Parse the tokens!
+        client.parse_request_body_response(json.dumps(token_response.json()))
+        # Now that you have tokens (yay) let's find and hit the URL
+        # from Google that gives you the user's profile information,
+        # including their Google profile image and email
+        userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+        uri, headers, body = client.add_token(userinfo_endpoint)
+        userinfo_response = requests.get(uri, headers=headers, data=body)
+        # You want to make sure their email is verified.
+        # The user authenticated with Google, authorized your
+        # app, and now you've verified their email through Google!
+        if userinfo_response.json().get("email_verified"):
+            unique_id = userinfo_response.json()["sub"]
+            users_email = userinfo_response.json()["email"]
+            picture = userinfo_response.json()["picture"]
+            users_name = userinfo_response.json()["given_name"]
+        else:
+            return "User email not available or not verified by Google.", 400
+        # Create a user in your db with the information provided
+        # by Google
+        user = User(id_=unique_id,
+                    name=users_name,
+                    email=users_email,
+                    profile_pic=picture
+                    )
+        # Doesn't exist? Add it to the database.
+        if not User.get(unique_id):
+            User.create(unique_id, users_name, users_email, picture)
+        # Begin user session by logging the user in
+        login_user(user)
+        # Send user back to homepage
+        return redirect(url_for("sendmsg"))
+
+    @app.route("/logout")
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for("index"))
 
 
 def get_recipients(group):
     recipients = []
     phone_nums = []
-    with open("data/contacts.json") as f:
-        contacts = json.load(f)
-        for person in contacts:
-            if person[group]:
-                recipients.append(person['name'])
-                phone_nums.append(person['phone'])
+    groups = Receipients.columns()
+    element = groups.index(group)
+    full_list = Receipients.get()
+    for recipient in full_list:
+        if recipient[element]:
+            recipients.append(recipient[groups.index("name")])
+            phone_nums.append(recipient[groups.index("phone")])
     return recipients, phone_nums
+
 
 class HomeForm(Form):
     group = SelectField("Recipients:", choices=choices)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
-    @app.route("/", methods=["GET", "POST"])
-    def send_msg():
-        form = HomeForm(request.form)
-        print(form.errors)
-        if request.method == "POST":
-            if form.validate():
-                group = request.form['group']
-                message = request.form['msg']
-                recipients, phone_nums = get_recipients(group)
-                for phone_num in phone_nums:
-                    twilio_msg = twilio.messages.create(to=phone_num,
-                                                        from_=settings['twilio']['phone_num'],
-                                                        body=message
-                                                        )
-                    print(twilio_msg)
-                flash(f"Message sent to: {', '.join(recipients)}")
-            else:
-                flash("Error: All form fields are required.")
-        return render_template("sendmsg.html", form=form)
+    @app.route("/sendmsg", methods=["GET", "POST"])
+    def sendmsg():
+        if current_user.is_authenticated:
+            form = HomeForm(request.form)
+            print(form.errors)
+            profile_pic = current_user.profile_pic
+            if request.method == "POST":
+                if form.validate():
+                    group = request.form['group']
+                    message = request.form['msg']
+                    recipients, phone_nums = get_recipients(group)
+                    # TODO move messages to separate function
+                    # TODO log message to database
+                    for phone_num in phone_nums:
+                        twilio_msg = twilio.messages.create(to=phone_num,
+                                                            from_=settings['twilio']['phone_num'],
+                                                            body=message
+                                                            )
+                        print(twilio_msg)
+                    flash(f"Message sent to: {', '.join(recipients)}")
+                else:
+                    flash("Error: All form fields are required.")
+            # TODO figure out how to set up options in sendmgs.html from Receipients.columns()
+            return render_template("sendmsg.html", form=form, profile_pic=profile_pic)
+        else:
+            return ("<h2>St. Petersburg Text App</h2>"
+                    "<a class='btn btn-default' href='/login' role='button'>Google Login</a>")
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, ssl_context="adhoc")

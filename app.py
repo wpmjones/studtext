@@ -7,6 +7,7 @@ from oauthlib.oauth2 import WebApplicationClient
 from wtforms import Form, TextAreaField, SelectField, validators
 from twilio.rest import Client
 from db import init_db_command, User, Receipients
+from waitress import serve
 from config import settings
 
 # Flask Configuration
@@ -191,4 +192,5 @@ class HomeForm(Form):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, ssl_context="adhoc")
+    # app.run(debug=True, ssl_context="adhoc")
+    serve(app, host="0.0.0.0", port="8321")

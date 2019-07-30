@@ -10,13 +10,13 @@ from db import init_db_command, User, Receipients
 from config import settings
 
 # Flask Configuration
-app = Flask(__name__)
-app.config.from_object(__name__)
-app.config["SECRET_KEY"] = settings['flask']['key']
+application = Flask(__name__)
+application.config.from_object(__name__)
+application.config["SECRET_KEY"] = settings['flask']['key']
 
 # Flask-Login
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(application)
 
 # Google Configuration
 google_client_id = settings['google']['id']
@@ -59,7 +59,7 @@ choices = [("students", "Students"),
 
 
 class HomePage:
-    @app.route("/")
+    @application.route("/")
     def index():
         if current_user.is_authenticated:
             # return (f"<p>Welcome {current_user.name} You're logged in!<br>"
@@ -70,7 +70,7 @@ class HomePage:
         else:
             return render_template("login.html")
 
-    @app.route("/login")
+    @application.route("/login")
     def login():
         # Find out what URL to hit for Google login
         google_provider_cfg = get_google_provider_cfg()
@@ -84,7 +84,7 @@ class HomePage:
                                                  )
         return redirect(request_uri)
 
-    @app.route("/login/callback")
+    @application.route("/login/callback")
     def callback():
         # Get authorization code Google sent back to you
         code = request.args.get("code")
@@ -137,7 +137,7 @@ class HomePage:
         # Send user back to homepage
         return redirect(url_for("sendmsg"))
 
-    @app.route("/logout")
+    @application.route("/logout")
     @login_required
     def logout():
         logout_user()
@@ -161,7 +161,7 @@ class HomeForm(Form):
     group = SelectField("Recipients:", choices=choices)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
-    @app.route("/sendmsg", methods=["GET", "POST"])
+    @application.route("/sendmsg", methods=["GET", "POST"])
     def sendmsg():
         if current_user.is_authenticated:
             form = HomeForm(request.form)
@@ -191,4 +191,4 @@ class HomeForm(Form):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, ssl_context="adhoc")
+    application.run(debug=True, ssl_context="adhoc")

@@ -1,4 +1,4 @@
 import yaml
 
 with open("config.yaml", "r") as f:
-    settings = yaml.load(f, Loader=yaml.CLoader)
+    settings = yaml.load(f, Loader=yaml.Loader)

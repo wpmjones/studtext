@@ -7,7 +7,6 @@ from oauthlib.oauth2 import WebApplicationClient
 from wtforms import Form, TextAreaField, SelectField, validators
 from twilio.rest import Client
 from db import init_db_command, User, Receipients
-from waitress import serve
 from config import settings
 
 # Flask Configuration

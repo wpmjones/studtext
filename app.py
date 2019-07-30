@@ -192,5 +192,4 @@ class HomeForm(Form):
 
 
 if __name__ == "__main__":
-    # app.run(debug=True, ssl_context="adhoc")
-    serve(app, host="0.0.0.0", port="8321")
+    app.run(debug=True, ssl_context="adhoc")

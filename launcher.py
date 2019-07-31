@@ -48,6 +48,7 @@ sid = settings['twilio']['sid']
 token = settings['twilio']['token']
 twilio = Client(sid, token)
 
+# This should come from the database
 choices = [("students", "Students"),
            ("staff", "Staff"),
            ("band", "Band"),

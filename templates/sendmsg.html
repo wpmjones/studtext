@@ -14,13 +14,11 @@
             <div class="form-group">
                 <label for="group">Group:</label>
                 <select class="form-control" id="group" name="group">
-                    <option value="students">Students</option>
-                    <option value="staff">Staff</option>
-                    <option value="band">Band</option>
-                    <option value="songsters">Songsters</option>
-                    <option value="womens_bible">Women's Bible Study</option>
-                    <option value="home_league">Home League</option>
-                    <option value="testers">DEBUG</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% else %}
+                        <option value="0">No groups available</option>
+                    {% endfor %}
                 </select>
                 <label for="msg">Message:</label>
                 <textarea class="form-control" id="msg" name="msg" rows="3" placeholder="Type message here"></textarea>

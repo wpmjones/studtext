@@ -1,3 +1,4 @@
+from db import User, Receipients
 from quart import Quart, redirect, url_for, request, render_template, flash
 from wtforms import Form, TextAreaField, SelectField, validators
 from twilio.rest import Client
@@ -10,13 +11,13 @@ app.config['SECRET_KEY'] = settings['flask']['key']
 twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 
 # This should come from the database
-choices = [("students", "Students"),
-           ("staff", "Staff"),
-           ("band", "Band"),
-           ("songsters", "Songsters"),
-           ("womens_bible", "Women's Bible Study"),
-           ("home_league", "Home League"),
-           ("testers", "Debug"),
+choices = [(1, "Students"),
+           (2, "Staff"),
+           (3, "Band"),
+           (4, "Songsters"),
+           (5, "Women's Bible Study"),
+           (6, "Home League"),
+           (7, "Debug"),
            ]
 
 
@@ -38,9 +39,9 @@ async def sendmsg():
         if form.validate():
             group = request.form['group']
             message = request.form['msg']
-            # recipients, phone_nums = get_recipients(group)
-            recipients = ["Patrick", "Jennifer"]
-            phone_nums = ["+17274632720", "+17274631360"]
+            recipients, phone_nums = await Receipients.get_recipients(group)
+            # recipients = ["Patrick", "Jennifer"]
+            # phone_nums = ["+17274632720", "+17274631360"]
             # TODO move messages to separate function
             # TODO log message to database
             for phone_num in phone_nums:
@@ -53,7 +54,8 @@ async def sendmsg():
         else:
             await flash("Error: All form fields are required.")
         # TODO figure out how to set up options in sendmgs.html from Receipients.columns()
-    return await render_template("sendmsg.html", form=form)  # , profile_pic=profile_pic)
+    groups = await Receipients.get_groups()
+    return await render_template("sendmsg.html", form=form, groups=groups)  # , profile_pic=profile_pic)
     # else:
     #     return ("<h2>St. Petersburg Text App</h2>"
     #             "<a class='btn btn-default' href='/login' role='button'>Google Login</a>")

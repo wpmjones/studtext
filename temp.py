@@ -31,30 +31,5 @@ class HomeForm(Form):
 
 @app.route("/sendmsg", methods=["GET", "POST"])
 async def sendmsg():
-    # if current_user.is_authenticated:
     form = HomeForm(request.form)
-    print(form.errors)
-    # profile_pic = current_user.profile_pic
-    if request.method == "POST":
-        if form.validate():
-            group = request.form['group']
-            message = request.form['msg']
-            # recipients, phone_nums = get_recipients(group)
-            recipients = ["Patrick", "Jennifer"]
-            phone_nums = ["+17274632720", "+17274631360"]
-            # TODO move messages to separate function
-            # TODO log message to database
-            for phone_num in phone_nums:
-                twilio_msg = twilio.messages.create(to=phone_num,
-                                                    from_=settings['twilio']['phone_num'],
-                                                    body=message
-                                                    )
-                print(twilio_msg)
-            await flash(f"Message sent to: {', '.join(recipients)}")
-        else:
-            await flash("Error: All form fields are required.")
-    # TODO figure out how to set up options in sendmgs.html from Receipients.columns()
-    return render_template("sendmsg.html", form=form)  # , profile_pic=profile_pic)
-    # else:
-    #     return ("<h2>St. Petersburg Text App</h2>"
-    #             "<a class='btn btn-default' href='/login' role='button'>Google Login</a>")
+    return render_template("sendmsg.html", form=form)

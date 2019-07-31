@@ -21,7 +21,7 @@ choices = [("students", "Students"),
 
 class HomePage:
     @app.route("/")
-    async def index():
+    async def index(self):
         return redirect(url_for("sendmsg"))
 
 
@@ -30,9 +30,9 @@ class HomeForm(Form):
     msg = TextAreaField("Message:", validators=[validators.required()])
 
     @app.route("/sendmsg", methods=["GET", "POST"])
-    def sendmsg():
+    async def sendmsg(self):
         # if current_user.is_authenticated:
-        form = HomeForm(request.form)
+        form = HomeForm(self.request.form)
         print(form.errors)
         # profile_pic = current_user.profile_pic
         if request.method == "POST":

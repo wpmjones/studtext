@@ -4,6 +4,7 @@ from twilio.rest import Client
 from config import settings
 
 app = Quart(__name__)
+app.config['SECRET_KEY'] = settings['flask']['key']
 
 # Set up Twilio
 twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])

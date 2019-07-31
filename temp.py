@@ -32,5 +32,6 @@ class HomeForm(Form):
 
 @app.route("/sendmsg", methods=["GET", "POST"])
 async def sendmsg():
-    form = HomeForm(request.form)
-    return render_template("sendmsg.html", form=form)
+    form = HomeForm()
+    print(form.errors)
+    return await render_template("sendmsg.html", form=form)

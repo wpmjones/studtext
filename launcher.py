@@ -1,12 +1,12 @@
 import requests
 import json
-import sqlite3
+import asyncio
 from flask import Flask, render_template, flash, request, url_for, redirect
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from oauthlib.oauth2 import WebApplicationClient
 from wtforms import Form, TextAreaField, SelectField, validators
 from twilio.rest import Client
-from db import init_db_command, User, Receipients
+from db import Psql, User, Receipients
 from config import settings
 
 # Flask Configuration
@@ -26,17 +26,11 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
-# database setup
-try:
-    init_db_command()
-except sqlite3.OperationalError:
-    # Assume it's already been created
-    pass
 
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.get(user_id, pool)
 
 
 # Get Google Provider
@@ -132,7 +126,7 @@ class HomePage:
                     )
         # Doesn't exist? Add it to the database.
         if not User.get(unique_id):
-            User.create(unique_id, users_name, users_email, picture)
+            User.create(unique_id, users_name, users_email, picture, pool)
         # Begin user session by logging the user in
         login_user(user)
         # Send user back to homepage

@@ -13,6 +13,10 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config["SECRET_KEY"] = settings['flask']['key']
 
+# Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 
 @app.route("/")
 def hello():

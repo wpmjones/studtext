@@ -30,6 +30,10 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
+# Turn on async
+loop = asyncio.get_event_loop()
+asyncio.set_event_loop(loop)
+
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
 async def load_user(user_id):
@@ -42,7 +46,6 @@ def get_google_provider_cfg():
 
 
 class HomeForm(FlaskForm):
-    loop = asyncio.get_event_loop()
     groups = loop.run_until_complete(Recipients.get_groups())
     groups = [[group['id'], group['name']] for group in groups]
     group = SelectField("Recipients:", choices=groups)
@@ -50,7 +53,6 @@ class HomeForm(FlaskForm):
 
 
 class CreateForm(FlaskForm):
-    loop = asyncio.get_event_loop()
     divisions, corps = loop.run_until_complete(User.get_corps())
     divisions = [[div['id'], div['name']] for div in divisions]
     corps = [[crp['id'], crp['name'], crp['div_id']] for crp in corps]

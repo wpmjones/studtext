@@ -59,7 +59,7 @@ class User(UserMixin):
             divisions = [[div['id'], div['name']] for div in d]
             c = await conn.fetch("SELECT id, name, div_id FROM corps ORDER BY id")
             corps = [[crp['id'], crp['name'], crp['div_id']] for crp in c]
-        return divisions, corps
+            return divisions, corps
 
 
 class Recipients:
@@ -79,7 +79,7 @@ class Recipients:
         async with pool.acquire() as conn:
             g = await conn.fetch("SELECT id, name FROM groups")
             groups = [[group['id'], group['name']] for group in g]
-        return groups
+            return groups
 
     @staticmethod
     async def get_recipients(group):

@@ -18,10 +18,10 @@ app.config['SECRET_KEY'] = settings['flask']['key']
 # Set up Twilio
 twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 
-# Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
-
+# # Flask-Login
+# login_manager = LoginManager()
+# login_manager.init_app(app)
+#
 # # Google Configuration
 # google_client_id = settings['google']['id']
 # google_client_secret = settings['google']['secret']

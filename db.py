@@ -48,8 +48,8 @@ class Recipients:
         # TODO add html to add recipients
         pool = await get_db()
         async with pool.acquire() as conn:
-            conn.execute("INSERT INTO recipients"
-                         "(name, phone, email, staff, students, band, songsters, womens_bible, home_league)"
+            conn.execute("INSERT INTO recipients "
+                         "(name, phone, email, staff, students, band, songsters, womens_bible, home_league) "
                          "VALUES ($1, $2)", name, phone)
 
     @staticmethod
@@ -66,9 +66,9 @@ class Recipients:
         phone_nums = []
         pool = await get_db()
         async with pool.acquire() as conn:
-            sql = ("SELECT r.name, r.phone"
-                   "FROM recipients r"
-                   "INNER JOIN recipient_groups rg on r.id = rg.recipient_id"
+            sql = ("SELECT r.name, r.phone "
+                   "FROM recipients r "
+                   "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
                    "WHERE rg.group_id = $1")
             rows = await conn.fetch(sql, group)
             for row in rows:

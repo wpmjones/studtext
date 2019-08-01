@@ -20,7 +20,8 @@ async def index():
 
 
 class HomeForm(FlaskForm):
-    group = SelectField("Recipients:")
+    choices = await Recipients.get_groups()
+    group = SelectField("Recipients:", choices=choices)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
@@ -28,12 +29,11 @@ class HomeForm(FlaskForm):
 async def sendmsg():
     form = HomeForm()
     if request.method == "POST":
-        form = HomeForm(request.form)
-        print(form.validate())
-        if await form.validate():
-            group = await request.form['group']
-            message = await request.form['msg']
-            recipients, phone_nums = await Receipients.get_recipients(group)
+        print(request.form)
+        if form.validate():
+            group = request.form['group']
+            message = request.form['msg']
+            recipients, phone_nums = await Recipients.get_recipients(group)
             # recipients = ["Patrick", "Jennifer"]
             # phone_nums = ["+17274632720", "+17274631360"]
             # TODO move messages to separate function

@@ -22,13 +22,13 @@ twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# Google Configuration
-google_client_id = settings['google']['id']
-google_client_secret = settings['google']['secret']
-google_discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
-
-# OAuth2 client setup
-client = WebApplicationClient(google_client_id)
+# # Google Configuration
+# google_client_id = settings['google']['id']
+# google_client_secret = settings['google']['secret']
+# google_discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
+#
+# # OAuth2 client setup
+# client = WebApplicationClient(google_client_id)
 
 
 # retrieve data from db.py
@@ -37,11 +37,9 @@ def get_data(form):
     loop = asyncio.get_event_loop()
     if form == "groups":
         groups = loop.run_until_complete(Recipients.get_groups())
-        logger.debug(groups)
         return groups
     if form in ("corps", "divisions"):
         divisions, corps = loop.run_until_complete(User.get_corps())
-        logger.debug(divisions)
         return divisions, corps
 
 # Flask-login helpfer to retrieve a user from our db

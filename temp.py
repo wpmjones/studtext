@@ -39,8 +39,7 @@ async def sendmsg():
             group = request.form['group']
             message = request.form['msg']
             recipients, phone_nums = await Recipients.get_recipients(group)
-            # recipients = ["Patrick", "Jennifer"]
-            # phone_nums = ["+17274632720", "+17274631360"]
+            logger.debug(recipients)
             # TODO move messages to separate function
             # TODO log message to database
             for phone_num in phone_nums:
@@ -48,7 +47,7 @@ async def sendmsg():
                                                     from_=settings['twilio']['phone_num'],
                                                     body=message
                                                     )
-                print(twilio_msg)
+                logger.info(f"{twilio_msg} sent to {', '.join(recipients)}")
             await flash(f"Message sent to: {', '.join(recipients)}")
         else:
             await flash("Error: All form fields are required.")

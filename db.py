@@ -68,7 +68,7 @@ class Recipients:
         async with pool.acquire() as conn:
             sql = ("SELECT r.name, r.phone"
                    "FROM recipients r"
-                   "INNER JOIN recipient_groups rg on r.id = rg.id"
+                   "INNER JOIN recipient_groups rg on r.id = rg.recipient_id"
                    "WHERE rg.group_id = $1")
             rows = await conn.fetch(sql, group)
             for row in rows:

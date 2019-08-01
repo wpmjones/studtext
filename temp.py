@@ -1,3 +1,5 @@
+import quart.flask_patch
+
 from db import User, Receipients
 from quart import Quart, redirect, url_for, request, render_template, flash
 from wtforms import Form, TextAreaField, SelectField, validators
@@ -24,11 +26,12 @@ class HomeForm(Form):
 @app.route("/sendmsg", methods=["GET", "POST"])
 async def sendmsg():
     form = HomeForm()
-    print(form.errors)
     if request.method == "POST":
-        if form.validate():
-            group = request.form['group']
-            message = request.form['msg']
+        form = HomeForm(await request.form)
+        print(await form.validate())
+        if await form.validate():
+            group = await request.form['group']
+            message = await request.form['msg']
             recipients, phone_nums = await Receipients.get_recipients(group)
             # recipients = ["Patrick", "Jennifer"]
             # phone_nums = ["+17274632720", "+17274631360"]

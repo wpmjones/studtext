@@ -14,8 +14,8 @@
             <div class="form-group">
                 <label for="group">Group:</label>
                 <select class="form-control" id="group" name="group">
-                    {% for group in groups %}
-                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% for choice in choices %}
+                        <option value="{{ choice['id'] }}">{{ choice['name'] }}</option>
                     {% else %}
                         <option value="0">No groups available</option>
                     {% endfor %}

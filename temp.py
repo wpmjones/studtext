@@ -20,8 +20,9 @@ async def index():
     return redirect(url_for("sendmsg"))
 
 loop = asyncio.get_event_loop()
-choices = loop.run_until_complete(Recipients.get_groups())
-logger.debug(choices)
+groups = loop.run_until_complete(Recipients.get_groups())
+choices = [[group['id'], group['name']] for group in groups]
+
 
 
 class HomeForm(FlaskForm):
@@ -52,8 +53,7 @@ async def sendmsg():
         else:
             await flash("Error: All form fields are required.")
         # TODO figure out how to set up options in sendmgs.html from Receipients.columns()
-    groups = await Receipients.get_groups()
-    return await render_template("sendmsg.html", form=form, groups=groups)  # , profile_pic=profile_pic)
+    return await render_template("sendmsg.html", form=form, choices=choices)  # , profile_pic=profile_pic)
     # else:
     #     return ("<h2>St. Petersburg Text App</h2>"
     #             "<a class='btn btn-default' href='/login' role='button'>Google Login</a>")

@@ -1,4 +1,5 @@
 import quart.flask_patch
+
 import asyncio
 import requests
 import json
@@ -13,22 +14,23 @@ from twilio.rest import Client
 from config import settings
 
 app = Quart(__name__)
-app.config['SECRET_KEY'] = settings['flask']['key']
+# app.config['SECRET_KEY'] = settings['flask']['key']
+app.secret_key = settings['flask']['key']
 
 # Set up Twilio
 twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 
-# # Flask-Login
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-#
-# # Google Configuration
-# google_client_id = settings['google']['id']
-# google_client_secret = settings['google']['secret']
-# google_discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
-#
-# # OAuth2 client setup
-# client = WebApplicationClient(google_client_id)
+# Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# Google Configuration
+google_client_id = settings['google']['id']
+google_client_secret = settings['google']['secret']
+google_discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
+
+# OAuth2 client setup
+client = WebApplicationClient(google_client_id)
 
 
 # retrieve data from db.py
@@ -42,11 +44,11 @@ def get_data(form):
         divisions, corps = loop.run_until_complete(User.get_corps())
         return divisions, corps
 
-# # Flask-login helpfer to retrieve a user from our db
-# @login_manager.user_loader
-# async def load_user(user_id):
-#     logger.debug("start load_user")
-#     return await User.get(user_id)
+# Flask-login helpfer to retrieve a user from our db
+@login_manager.user_loader
+async def load_user(user_id):
+    logger.debug("start load_user")
+    return await User.get(user_id)
 
 
 # Get Google Provider

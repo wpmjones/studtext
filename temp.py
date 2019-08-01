@@ -21,8 +21,8 @@ async def index():
 
 loop = asyncio.get_event_loop()
 groups = loop.run_until_complete(Recipients.get_groups())
-choices = [[group['id'], group['name']] for group in groups]
-
+choices = [[group.id, group.name] for group in groups]
+logger.debug(choices)
 
 
 class HomeForm(FlaskForm):

@@ -42,11 +42,11 @@ def get_data(form):
         divisions, corps = loop.run_until_complete(User.get_corps())
         return divisions, corps
 
-# Flask-login helpfer to retrieve a user from our db
-@login_manager.user_loader
-async def load_user(user_id):
-    logger.debug("start load_user")
-    return await User.get(user_id)
+# # Flask-login helpfer to retrieve a user from our db
+# @login_manager.user_loader
+# async def load_user(user_id):
+#     logger.debug("start load_user")
+#     return await User.get(user_id)
 
 
 # Get Google Provider

@@ -52,7 +52,6 @@ class HomeForm(FlaskForm):
     groups = [[group['id'], group['name']] for group in groups]
     group = SelectField("Recipients:", choices=groups)
     msg = TextAreaField("Message:", validators=[validators.required()])
-    loop.close()
 
 
 class CreateForm(FlaskForm):
@@ -62,7 +61,6 @@ class CreateForm(FlaskForm):
     corps = [[crp['id'], crp['name'], crp['div_id']] for crp in corps]
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
-    loop.close()
 
 
 @app.route("/")

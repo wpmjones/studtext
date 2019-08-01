@@ -18,7 +18,8 @@ class User(UserMixin):
         self.profile_pic = profile_pic
         self.corps_id = corps_id
 
-    async def get(self, user_id):
+    @classmethod
+    async def get(cls, user_id):
         pool = await get_db()
         async with pool.acquire() as conn:
             user = await conn.fetchrow(f"SELECT * FROM user WHERE id = {user_id}")
@@ -33,13 +34,30 @@ class User(UserMixin):
                         )
             return user
 
-    async def create(self, id_, name, email, profile_pic):
+    @classmethod
+    async def create(cls, id_, name, email, profile_pic):
         # TODO send welcome message via Twilio
         pool = await get_db()
         async with pool.acquire() as conn:
             conn.execute("INSERT INTO user (id, name, email, profile_pic) "
                          "VALUES ($1, $2, $3, $4)",
                          id_, name, email, profile_pic)
+        logger.info(f"User {name} successfully added to database.")
+
+    @classmethod
+    async def link_corps(cls, id_, corps_id):
+        pool = await get_db()
+        async with pool.acquire() as conn:
+            conn.execute("UPDATE users SET corps_id = $1 WHERE id = $2", corps_id, id_)
+        logger.info(f"User: {id_} successfully linked to {corps_id} corps.")
+
+    @classmethod
+    async def get_corps(cls):
+        pool = await get_db()
+        async with pool.acquire() as conn:
+            divisions = conn.fetch("SELECT id, name FROM divisions ORDER BY id")
+            corps = conn.fetch("SELECT id, name, div_id FROM corps ORDER BY id")
+        return divisions, corps
 
 
 class Recipients:
@@ -49,16 +67,16 @@ class Recipients:
         pool = await get_db()
         async with pool.acquire() as conn:
             conn.execute("INSERT INTO recipients "
-                         "(name, phone, email, staff, students, band, songsters, womens_bible, home_league) "
+                         "(name, phone) "
                          "VALUES ($1, $2)", name, phone)
+        logger.info(f"Recipient {name} successfully added to database.")
 
     @staticmethod
     async def get_groups():
         pool = await get_db()
         async with pool.acquire() as conn:
-            sql = "SELECT id, name FROM groups"
-            rows = await conn.fetch(sql)
-            return rows
+            rows = await conn.fetch("SELECT id, name FROM groups")
+        return rows
 
     @staticmethod
     async def get_recipients(group):

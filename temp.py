@@ -41,11 +41,6 @@ def get_google_provider_cfg():
     return requests.get(google_discovery_url).json()
 
 
-@app.route("/")
-async def index():
-    return redirect(url_for("send_msg"))
-
-
 class HomeForm(FlaskForm):
     loop = asyncio.get_event_loop()
     groups = loop.run_until_complete(Recipients.get_groups())

@@ -19,7 +19,8 @@ twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 async def index():
     return redirect(url_for("sendmsg"))
 
-choices = asyncio.ensure_future(Recipients.get_groups())
+loop = asyncio.get_event_loop()
+choices = loop.run_until_complete(Recipients.get_groups())
 logger.debug(choices)
 
 

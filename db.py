@@ -77,8 +77,9 @@ class Recipients:
     async def get_groups():
         pool = await get_db()
         async with pool.acquire() as conn:
-            rows = await conn.fetch("SELECT id, name FROM groups")
-        return rows
+            g = await conn.fetch("SELECT id, name FROM groups")
+            groups = [[group['id'], group['name']] for group in g]
+        return groups
 
     @staticmethod
     async def get_recipients(group):

@@ -37,7 +37,7 @@ def get_data(form):
     try:
         if form == "groups":
             groups = loop.run_until_complete(Recipients.get_groups())
-            return [[group['id'], group['name']] for group in groups]
+            return groups
         if form in ("corps", "divisions"):
             divisions, corps = loop.run_until_complete(User.get_corps())
             return divisions, corps

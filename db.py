@@ -55,8 +55,8 @@ class User(UserMixin):
     async def get_corps(cls):
         pool = await get_db()
         async with pool.acquire() as conn:
-            divisions = conn.fetch("SELECT id, name FROM divisions ORDER BY id")
-            corps = conn.fetch("SELECT id, name, div_id FROM corps ORDER BY id")
+            divisions = await conn.fetch("SELECT id, name FROM divisions ORDER BY id")
+            corps = await conn.fetch("SELECT id, name, div_id FROM corps ORDER BY id")
         return divisions, corps
 
 

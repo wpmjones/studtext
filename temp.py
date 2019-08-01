@@ -1,5 +1,6 @@
 import quart.flask_patch
 import asyncio
+from loguru import logger
 from db import User, Recipients
 from quart import Quart, redirect, url_for, request, render_template, flash
 from flask_wtf import FlaskForm
@@ -19,7 +20,7 @@ async def index():
     return redirect(url_for("sendmsg"))
 
 choices = asyncio.ensure_future(Recipients.get_groups())
-print(choices)
+logger.debug(choices)
 
 
 class HomeForm(FlaskForm):

@@ -10,16 +10,6 @@ app.config['SECRET_KEY'] = settings['flask']['key']
 # Set up Twilio
 twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 
-# This should come from the database
-choices = [(1, "Students"),
-           (2, "Staff"),
-           (3, "Band"),
-           (4, "Songsters"),
-           (5, "Women's Bible Study"),
-           (6, "Home League"),
-           (7, "Debug"),
-           ]
-
 
 @app.route("/")
 async def index():
@@ -27,7 +17,7 @@ async def index():
 
 
 class HomeForm(Form):
-    group = SelectField("Recipients:", choices=choices)
+    group = SelectField("Recipients:")
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 

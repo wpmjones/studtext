@@ -21,7 +21,7 @@ async def index():
 
 loop = asyncio.get_event_loop()
 groups = loop.run_until_complete(Recipients.get_groups())
-choices = [[group.id, group.name] for group in groups]
+choices = [[group['id'], group['name']] for group in groups]
 
 
 class HomeForm(FlaskForm):
@@ -33,10 +33,12 @@ class HomeForm(FlaskForm):
 async def sendmsg():
     form = HomeForm()
     if request.method == "POST":
-        print(request.form)
-        if form.validate():
-            group = request.form['group']
-            message = request.form['msg']
+        logger.debug(await request.form)
+        req_form = await request.form
+        if req_form['group'] and req_form['msg']:
+            group = req_form['group']
+            message = req_form['msg']
+            logger.debug(group, message)
             recipients, phone_nums = await Recipients.get_recipients(group)
             logger.debug(recipients)
             # TODO move messages to separate function
@@ -50,7 +52,6 @@ async def sendmsg():
             await flash(f"Message sent to: {', '.join(recipients)}")
         else:
             await flash("Error: All form fields are required.")
-        # TODO figure out how to set up options in sendmgs.html from Receipients.columns()
     return await render_template("sendmsg.html", form=form, choices=choices)  # , profile_pic=profile_pic)
     # else:
     #     return ("<h2>St. Petersburg Text App</h2>"

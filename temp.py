@@ -71,6 +71,7 @@ class CreateForm(FlaskForm):
 
 @app.route("/")
 async def index():
+    logger.debug("start index route")
     if current_user.is_authenticated:
         return redirect(url_for("send_msg"))
     else:
@@ -79,6 +80,7 @@ async def index():
 
 @app.route("/login")
 async def login():
+    logger.debug("start login route")
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -99,6 +101,7 @@ async def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 async def send_msg():
+    logger.debug("start send_msg route")
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
@@ -128,6 +131,7 @@ async def send_msg():
 
 @app.route("/login/callback")
 async def callback():
+    logger.debug("start callback route")
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     # Find out what URL to hit to get tokens that allow you to ask for
@@ -175,6 +179,7 @@ async def callback():
 
 @app.route("/create")
 async def create_user():
+    logger.debug("start create route")
     if current_user.is_authenticated:
         form = CreateForm()
         if request.method == "POST":

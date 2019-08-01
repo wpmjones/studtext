@@ -33,12 +33,11 @@ class HomeForm(FlaskForm):
 async def sendmsg():
     form = HomeForm()
     if request.method == "POST":
-        logger.debug(await request.form)
         req_form = await request.form
         if req_form['group'] and req_form['msg']:
-            group = req_form['group']
+            group = int(req_form['group'])
             message = req_form['msg']
-            logger.debug(group, message)
+            logger.debug(str(group), message)
             recipients, phone_nums = await Recipients.get_recipients(group)
             logger.debug(recipients)
             # TODO move messages to separate function

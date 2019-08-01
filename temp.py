@@ -37,9 +37,11 @@ def get_data(form):
     try:
         if form == "groups":
             groups = loop.run_until_complete(Recipients.get_groups())
+            logger.debug(groups)
             return groups
         if form in ("corps", "divisions"):
             divisions, corps = loop.run_until_complete(User.get_corps())
+            logger.debug(divisions)
             return divisions, corps
     except:
         logger.exception(form)

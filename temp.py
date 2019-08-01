@@ -34,14 +34,17 @@ client = WebApplicationClient(google_client_id)
 # retrieve data from db.py
 def get_data(form):
     loop = asyncio.get_event_loop()
-    if form == "groups":
-        groups = loop.run_until_complete(Recipients.get_groups())
-        return [[group['id'], group['name']] for group in groups]
-    if form in ("corps", "divisions"):
-        divisions, corps = loop.run_until_complete(User.get_corps())
-        divisions = [[div['id'], div['name']] for div in divisions]
-        corps = [[crp['id'], crp['name'], crp['div_id']] for crp in corps]
-        return divisions, corps
+    try:
+        if form == "groups":
+            groups = loop.run_until_complete(Recipients.get_groups())
+            return [[group['id'], group['name']] for group in groups]
+        if form in ("corps", "divisions"):
+            divisions, corps = loop.run_until_complete(User.get_corps())
+            divisions = [[div['id'], div['name']] for div in divisions]
+            corps = [[crp['id'], crp['name'], crp['div_id']] for crp in corps]
+            return divisions, corps
+    except:
+        logger.exception(form)
 
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader

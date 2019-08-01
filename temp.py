@@ -1,6 +1,6 @@
 import quart.flask_patch
-
-from db import User, Receipients
+import asyncio
+from db import User, Recipients
 from quart import Quart, redirect, url_for, request, render_template, flash
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SelectField, validators
@@ -18,9 +18,11 @@ twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 async def index():
     return redirect(url_for("sendmsg"))
 
+choices = asyncio.ensure_future(Recipients.get_groups())
+print(choices)
+
 
 class HomeForm(FlaskForm):
-    choices = await Recipients.get_groups()
     group = SelectField("Recipients:", choices=choices)
     msg = TextAreaField("Message:", validators=[validators.required()])
 

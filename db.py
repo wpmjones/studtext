@@ -41,7 +41,7 @@ class User(UserMixin):
                          id_, name, email, profile_pic)
 
 
-class Receipients:
+class Recipients:
     @staticmethod
     async def create(name, phone):
         # TODO add html to add recipients

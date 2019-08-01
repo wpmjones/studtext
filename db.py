@@ -58,7 +58,6 @@ class Recipients:
         async with pool.acquire() as conn:
             sql = "SELECT id, name FROM groups"
             rows = await conn.fetch(sql)
-            logger.debug(rows)
             return rows
 
     @staticmethod

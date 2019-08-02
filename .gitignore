@@ -126,4 +126,3 @@ dmypy.json
 # others
 *.json
 *.yaml
-sqlite_db

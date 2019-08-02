@@ -1,12 +1,8 @@
-import quart.flask_patch
-
-import asyncio
 import requests
 import json
-import time
 from loguru import logger
 from db import User, Recipients
-from quart import Quart, redirect, url_for, request, render_template, flash
+from flask import Flask, redirect, url_for, request, render_template, flash
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
@@ -14,7 +10,7 @@ from wtforms import TextAreaField, SelectField, validators
 from twilio.rest import Client
 from config import settings
 
-app = Quart(__name__)
+app = Flask(__name__)
 app.secret_key = settings['flask']['key']
 
 # Set up Twilio
@@ -32,8 +28,6 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
-loop = asyncio.get_event_loop()
-
 
 # Get Google Provider
 def get_google_provider_cfg():
@@ -41,18 +35,14 @@ def get_google_provider_cfg():
 
 
 class HomeForm(FlaskForm):
-    while loop.is_running():
-        time.sleep(1)
-    groups = loop.run_until_complete(Recipients.get_groups())
+    groups = Recipients.get_groups()
     logger.debug(groups)
     group = SelectField("Recipients:", choices=groups)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
 class CreateForm(FlaskForm):
-    while loop.is_running():
-        time.sleep(1)
-    divisions, corps = loop.run_until_complete(User.get_corps())
+    divisions, corps = User.get_corps()
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
 
@@ -60,31 +50,27 @@ class CreateForm(FlaskForm):
 # Flask-login helper to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
-    user = asyncio.BaseEventLoop.sync_wait(User.get(user_id))
-    logger.debug(user.name)
-    return user
+    return User.get(user_id)
 
 
 @app.route("/protected")
 @login_required
-async def protect():
+def protect():
     return f"Logged in as: {current_user.id}"
 
 
 @app.route("/")
-async def index():
-    while loop.is_running():
-        time.sleep(1)
+def index():
     if current_user.is_authenticated:
         logger.debug("Current user is authenticated")
         return redirect(url_for("send_msg"))
     else:
         logger.debug("Current user is not authenticated")
-        return await render_template("login.html")
+        return render_template("login.html")
 
 
 @app.route("/login")
-async def login():
+def login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -98,22 +84,22 @@ async def login():
 
 @app.route("/logout")
 @login_required
-async def logout():
+def logout():
     logout_user()
     return redirect(url_for("login"))
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
-async def send_msg():
+def send_msg():
     logger.debug(current_user)
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
-            group = (await request.form)['group']
-            message = (await request.form)['msg']
+            group = request.form['group']
+            message = request.form['msg']
             if group and message:
                 logger.debug(group, message)
-                recipients, phone_nums = await Recipients.get_recipients(int(group))
+                recipients, phone_nums = Recipients.get_recipients(int(group))
                 # TODO move messages to separate function
                 # TODO log message to database
                 for phone_num in phone_nums:
@@ -121,19 +107,19 @@ async def send_msg():
                                                         from_=settings['twilio']['phone_num'],
                                                         body=message)
                     logger.info(f"{twilio_msg.sid} sent to {', '.join(recipients)}")
-                await flash(f"Message sent to: {', '.join(recipients)}")
+                flash(f"Message sent to: {', '.join(recipients)}")
             else:
-                await flash("Error: All form fields are required.")
-        return await render_template("sendmsg.html",
-                                     form=form,
-                                     choices=form.groups,
-                                     profile_pic=current_user.profile_pic)
+                flash("Error: All form fields are required.")
+        return render_template("sendmsg.html",
+                               form=form,
+                               choices=form.groups,
+                               profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))
 
 
 @app.route("/login/callback")
-async def callback():
+def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     # Find out what URL to hit to get tokens that allow you to ask for
@@ -171,37 +157,37 @@ async def callback():
     else:
         return "User email not available or not verified by Google.", 400
     # Check if user exists. If not, go to create page (to select corps)
-    if not await User.get(unique_id):
-        await User.create(unique_id, users_name, users_email, picture)
+    if not User.get(unique_id):
+        User.create(unique_id, users_name, users_email, picture)
         return redirect(url_for("create_user"))
     # Begin user session by logging the user in
-    user = await User.get(unique_id)
+    user = User.get(unique_id)
     login_user(user)
     # Send user back to homepage
     return redirect(url_for("send_msg"))
 
 
 @app.route("/create")
-async def create_user():
+def create_user():
     logger.debug("start create route")
     if current_user.is_authenticated:
         form = CreateForm()
         if request.method == "POST":
-            req_form = await request.form
+            req_form = request.form
             div_id = req_form['division']
             corps_id = req_form['corps']
             correct_div_id = form.corps[corps_id - 1][2]
             logger.debug(f"Selected division: {div_id} - Selected corps: {corps_id} - DivForThatCorps: {correct_div_id}")
             if div_id == correct_div_id:
-                await User.link_corps(current_user.id, corps_id)
+                User.link_corps(current_user.id, corps_id)
                 return redirect(url_for("send_msg"))
             else:
-                await flash("Error: Corps does not match the selected division.")
+                flash("Error: Corps does not match the selected division.")
             return redirect(url_for("send_msg"))
-        return await render_template("create.html",
-                                     form=form,
-                                     divisions=form.divisions,
-                                     corps=form.corps,
-                                     profile_pic=current_user.profile_pic)
+        return render_template("create.html",
+                               form=form,
+                               divisions=form.divisions,
+                               corps=form.corps,
+                               profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))

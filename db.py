@@ -1,12 +1,15 @@
-import asyncpg
+import psycopg2
 from loguru import logger
 from flask_login import UserMixin
 from config import settings
 
 
-async def get_db():
-    pool = await asyncpg.create_pool(f"{settings['pg']['uri']}/satext", max_size=85)
-    return pool
+def get_db():
+    conn = psycopg2.connect(dbname=settings['pg']['dbname'],
+                            user=settings['pg']['user'],
+                            password=settings['pg']['password'])
+    conn.set_session(autocommit=True)
+    return conn
 
 
 class User(UserMixin):
@@ -18,81 +21,96 @@ class User(UserMixin):
         self.profile_pic = profile_pic
         self.corps_id = corps_id
 
-    @classmethod
-    async def get(cls, user_id):
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            sql = f"SELECT * FROM users WHERE id = '{user_id}'"
-            user = await conn.fetchrow(sql)
-            if not user:
-                return None
-            user = User(id_=user['id'],
-                        name=user['name'],
-                        email=user['email'],
-                        profile_pic=user['profile_pic'],
-                        corps_id=user['corps_id']
-                        )
-            return user
+    @staticmethod
+    def get(user_id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                sql = f"SELECT * FROM users WHERE id = %s"
+                cursor.execute(sql, [user_id])
+                user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if not user:
+            return None
+        user = User(id_=user[0],
+                    name=user[1],
+                    email=user[2],
+                    profile_pic=user[3],
+                    corps_id=user[4]
+                    )
+        return user
 
-    @classmethod
-    async def create(cls, id_, name, email, profile_pic):
+    @staticmethod
+    def create(id_, name, email, profile_pic):
         # TODO send welcome message via Twilio
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            conn.execute("INSERT INTO user (id, name, email, profile_pic) "
-                         "VALUES ($1, $2, $3, $4)",
-                         id_, name, email, profile_pic)
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("INSERT INTO user (id, name, email, profile_pic) "
+                               "VALUES (%s, %s, %s, %s)",
+                               [id_, name, email, profile_pic])
+        cursor.close()
+        conn.close()
         logger.info(f"User {name} successfully added to database.")
 
-    @classmethod
-    async def link_corps(cls, id_, corps_id):
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            conn.execute("UPDATE users SET corps_id = $1 WHERE id = $2", corps_id, id_)
-        logger.info(f"User: {id_} successfully linked to {corps_id} corps.")
+    @staticmethod
+    def link_corps(id_, corps_id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("UPDATE users SET corps_id = %d WHERE id = %s", [corps_id, id_])
+                cursor.execute("SELECT name FROM corps WHERE corps_id = %d", [corps_id])
+                corps_name = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        logger.info(f"User: {id_} successfully linked to {corps_name} corps.")
 
-    @classmethod
-    async def get_corps(cls):
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            d = await conn.fetch("SELECT id, name FROM divisions ORDER BY id")
-            divisions = [(div['id'], div['name']) for div in d]
-            c = await conn.fetch("SELECT id, name, div_id FROM corps ORDER BY id")
-            corps = [(crp['id'], crp['name'], crp['div_id']) for crp in c]
-            return divisions, corps
+    @staticmethod
+    def get_corps():
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, name FROM divisions ORDER BY id")
+                divisions = cursor.fetchall()
+                cursor.execute("SELECT id, name, div_id FROM corps ORDER BY id")
+                corps = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return divisions, corps
 
 
 class Recipients:
     @staticmethod
-    async def create(name, phone):
+    def create(name, phone):
         # TODO add html to add recipients
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            conn.execute("INSERT INTO recipients "
-                         "(name, phone) "
-                         "VALUES ($1, $2)", name, phone)
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                conn.execute("INSERT INTO recipients "
+                             "(name, phone) "
+                             "VALUES (%s, %s)", [name, phone])
+        cursor.close()
+        conn.close()
         logger.info(f"Recipient {name} successfully added to database.")
 
     @staticmethod
-    async def get_groups():
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            g = await conn.fetch("SELECT id, name FROM groups")
-            groups = [(group['id'], group['name']) for group in g]
-            return groups
+    def get_groups():
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, name FROM groups")
+                groups = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return groups
 
     @staticmethod
-    async def get_recipients(group):
+    def get_recipients(group):
         recipients = []
         phone_nums = []
-        pool = await get_db()
-        async with pool.acquire() as conn:
-            sql = ("SELECT r.name, r.phone "
-                   "FROM recipients r "
-                   "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
-                   "WHERE rg.group_id = $1")
-            rows = await conn.fetch(sql, group)
-            for row in rows:
-                recipients.append(row['name'])
-                phone_nums.append(f"+1{row['phone']}")
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                sql = ("SELECT r.name, r.phone "
+                       "FROM recipients r "
+                       "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
+                       "WHERE rg.group_id = %d")
+                rows = cursor.execute(sql, [group])
+                for row in rows:
+                    recipients.append(row[0])
+                    phone_nums.append(f"+1{row[1]}")
             return recipients, phone_nums

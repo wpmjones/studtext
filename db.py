@@ -112,7 +112,8 @@ class Recipients:
                        "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
                        "WHERE rg.group_id = %s")
                 logger.debug(cursor.mogrify(sql, [group]))
-                rows = cursor.execute(sql, [group])
+                cursor.execute(sql, [group])
+                rows = cursor.fetchall()
                 for row in rows:
                     recipients.append(row[0])
                     phone_nums.append(f"+1{row[1]}")

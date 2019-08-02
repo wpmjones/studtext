@@ -59,7 +59,7 @@ class CreateForm(FlaskForm):
 
 # Flask-login helper to retrieve a user from our db
 @login_manager.user_loader
-def load_user(user_id):
+async def load_user(user_id):
     user = asyncio.sync_wait(User.get(user_id))
     logger.debug(user.name)
     return user

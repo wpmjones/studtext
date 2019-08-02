@@ -58,13 +58,15 @@ def get_google_provider_cfg():
 
 
 class HomeForm(FlaskForm):
-    groups = get_data("groups")
+    # groups = get_data("groups")
+    groups = loop.run_until_complete(Recipients.get_groups())
     group = SelectField("Recipients:", choices=groups)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
 class CreateForm(FlaskForm):
-    divisions, corps = get_data("corps")
+    # divisions, corps = get_data("corps")
+    divisions, corps = loop.run_until_complete(User.get_corps())
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
 

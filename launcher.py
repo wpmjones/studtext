@@ -35,14 +35,6 @@ client = WebApplicationClient(google_client_id)
 loop = asyncio.get_event_loop()
 
 
-# Flask-login helper to retrieve a user from our db
-@login_manager.user_loader
-async def load_user(user_id):
-    user = asyncio.sync_wait(User.get(user_id))
-    logger.debug(user.name)
-    return user
-
-
 # Get Google Provider
 def get_google_provider_cfg():
     return requests.get(google_discovery_url).json()
@@ -63,6 +55,14 @@ class CreateForm(FlaskForm):
     divisions, corps = loop.run_until_complete(User.get_corps())
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
+
+
+# Flask-login helper to retrieve a user from our db
+@login_manager.user_loader
+def load_user(user_id):
+    user = asyncio.sync_wait(User.get(user_id))
+    logger.debug(user.name)
+    return user
 
 
 @app.route("/protected")
@@ -105,7 +105,7 @@ async def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 async def send_msg():
-    logger.debug(await current_user)
+    logger.debug(current_user)
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":

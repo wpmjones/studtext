@@ -46,7 +46,7 @@ def get_data(form):
 @login_manager.user_loader
 def load_user(user_id):
     loop = asyncio.get_event_loop()
-    user = asyncio.ensure_future(User.get(user_id))
+    user = loop.run_until_complete(User.get(user_id))
     logger.debug(user)
     return user
 

@@ -115,7 +115,7 @@ def send_msg():
             session.pop("alert", None)
         return render_template("sendmsg.html",
                                form=form,
-                               choices=form.groups,
+                               choices=form.group.choices,
                                profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))

@@ -113,7 +113,6 @@ class Recipients:
     def get_recipients(group):
         recipients = []
         phone_nums = []
-        logger.debug(f"group is {type(group)}")
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = ("SELECT r.name, r.phone "
@@ -126,3 +125,17 @@ class Recipients:
                     recipients.append(row[0])
                     phone_nums.append(f"+1{row[1]}")
             return recipients, phone_nums
+
+
+class Messages:
+    @staticmethod
+    def add_message(sid, user_id, phone, group_id, message):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                sql = ("INSERT INTO messages "
+                       "(sid, user_id, phone, group_id, message) "
+                       "VALUES (%s, %s, %s, %s, %s)")
+                cursor.execute(sql, [sid, user_id, phone, group_id, message])
+        cursor.close()
+        conn.close()
+        logger.info(f"Twilio Message {sid} added to database.")

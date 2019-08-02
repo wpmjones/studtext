@@ -1,7 +1,8 @@
 import requests
 import json
+from datetime import datetime
 from loguru import logger
-from db import User, Recipients
+from db import User, Recipients, Messages
 from flask import Flask, redirect, url_for, request, render_template, flash
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -105,7 +106,7 @@ def send_msg():
                     twilio_msg = twilio.messages.create(to=phone_num,
                                                         from_=settings['twilio']['phone_num'],
                                                         body=message)
-                    logger.info(f"{twilio_msg.sid} sent to {', '.join(recipients)}")
+                    Messages.add_message(twilio_msg.sid, current_user.id, phone_num, group, message)
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")

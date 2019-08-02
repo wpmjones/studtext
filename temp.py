@@ -72,6 +72,7 @@ class CreateForm(FlaskForm):
 @app.route("/protected")
 @login_required
 async def protect():
+    logger.debug("start protected route")
     return f"Logged in as: {current_user.id}"
 
 

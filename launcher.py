@@ -179,6 +179,7 @@ def select_corps():
                                        corps=form.corps.choices,
                                        profile_pic=current_user.profile_pic)
             if request.form['corps']:
+                logger.debug("POST from corps")
                 User.link_corps(current_user.id, request.form['corps'])
                 return redirect(url_for("send_msg"))
             else:

@@ -57,6 +57,7 @@ class User(UserMixin):
     def link_corps(id_, corps_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
+                logger.debug(cursor.mogrify("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_]))
                 cursor.execute("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_])
                 cursor.execute("SELECT name FROM corps WHERE corps_id = %s", [corps_id])
                 corps_name = cursor.fetchone()[0]

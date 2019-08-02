@@ -99,14 +99,14 @@ def send_msg():
             message = request.form['msg']
             if group and message:
                 logger.debug(f"{message} sending to group id {group}")
-                recipients, phone_nums = Recipients.get_recipients(group)
-                # TODO move messages to separate function
-                # TODO log message to database
-                for phone_num in phone_nums:
-                    twilio_msg = twilio.messages.create(to=phone_num,
+                recipients = Recipients.get_recipients(group)
+                names = []
+                for recipient in recipients:
+                    names += recipient[0]
+                    twilio_msg = twilio.messages.create(to=recipient[1],
                                                         from_=settings['twilio']['phone_num'],
                                                         body=message)
-                    Messages.add_message(twilio_msg.sid, current_user.id, phone_num, group, message)
+                    Messages.add_message(twilio_msg.sid, current_user.id, recipient[2], group, message)
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")

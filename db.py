@@ -111,31 +111,29 @@ class Recipients:
 
     @staticmethod
     def get_recipients(group):
-        recipients = []
-        phone_nums = []
         with get_db() as conn:
             with conn.cursor() as cursor:
-                sql = ("SELECT r.name, r.phone "
+                sql = ("SELECT r.name, '+1' || r.phone as phone, r.id "
                        "FROM recipients r "
                        "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
                        "WHERE rg.group_id = %s")
                 cursor.execute(sql, [group])
-                rows = cursor.fetchall()
-                for row in rows:
-                    recipients.append(row[0])
-                    phone_nums.append(f"+1{row[1]}")
-            return recipients, phone_nums
+                recipients = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return recipients
 
 
 class Messages:
     @staticmethod
-    def add_message(sid, user_id, phone, group_id, message):
+    def add_message(sid, user_id, recipient_id, group_id, message):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = ("INSERT INTO messages "
-                       "(sid, user_id, phone, group_id, message) "
+                       "(sid, user_id, recipient_id, group_id, message) "
                        "VALUES (%s, %s, %s, %s, %s)")
-                cursor.execute(sql, [sid, user_id, phone[2:], group_id, message])
+                logger.debug(cursor.mogrify(sql, [sid, user_id, recipient_id, group_id, message]))
+                cursor.execute(sql, [sid, user_id, recipient_id, group_id, message])
         cursor.close()
         conn.close()
         logger.info(f"Twilio Message {sid} added to database.")

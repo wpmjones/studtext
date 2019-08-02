@@ -173,7 +173,7 @@ async def callback():
     else:
         return "User email not available or not verified by Google.", 400
     # Check if user exists. If not, go to create page (to select corps)
-    if not User.get(unique_id):
+    if not await User.get(unique_id):
         await User.create(unique_id, users_name, users_email, picture)
         return redirect(url_for("create_user"))
     # Begin user session by logging the user in

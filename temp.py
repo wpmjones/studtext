@@ -38,10 +38,9 @@ loop = asyncio.get_event_loop()
 
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
-def load_user(user_id):
-    while loop.is_running():
-        time.sleep(1)
-    user = loop.run_until_complete(User.get(user_id))
+async def load_user(user_id):
+    # user = loop.run_until_complete(User.get(user_id))
+    user = await User.get(user_id)
     logger.debug(user.name)
     return user
 

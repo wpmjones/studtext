@@ -75,7 +75,8 @@ async def protect():
 
 @app.route("/")
 async def index():
-    logger.debug(current_user)
+    while loop.is_running():
+        await asyncio.sleep(1)
     if current_user.is_authenticated:
         logger.debug("Current user is authenticated")
         return redirect(url_for("send_msg"))

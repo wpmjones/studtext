@@ -32,7 +32,8 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 client = WebApplicationClient(google_client_id)
 
 loop = asyncio.get_event_loop()
-test_user = loop.run_until_complete(User.get())
+test_user = loop.run_until_complete(User.get(105615243232119679687))
+print(test_user)
 
 # retrieve data from db.py
 def get_data(form):

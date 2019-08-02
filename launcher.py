@@ -90,7 +90,7 @@ def logout():
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
-def send_msg(alert: str = None):
+def send_msg():
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
@@ -109,8 +109,8 @@ def send_msg(alert: str = None):
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")
-        if alert:
-            flash(alert)
+        if request.alert:
+            flash(request.alert)
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.groups,

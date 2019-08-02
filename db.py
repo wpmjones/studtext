@@ -104,12 +104,14 @@ class Recipients:
     def get_recipients(group):
         recipients = []
         phone_nums = []
+        logger.debug(f"group is {type(group)}")
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = ("SELECT r.name, r.phone "
                        "FROM recipients r "
                        "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
                        "WHERE rg.group_id = %d")
+                logger.debug(cursor.mogrify(sql, [group]))
                 rows = cursor.execute(sql, [group])
                 for row in rows:
                     recipients.append(row[0])

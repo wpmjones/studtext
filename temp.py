@@ -37,11 +37,9 @@ def get_data(form):
     loop = asyncio.get_event_loop()
     if form == "groups":
         groups = loop.run_until_complete(Recipients.get_groups())
-        loop.close()
         return groups
     if form in ("corps", "divisions"):
         divisions, corps = loop.run_until_complete(User.get_corps())
-        loop.close()
         return divisions, corps
 
 # Flask-login helpfer to retrieve a user from our db
@@ -49,7 +47,6 @@ def get_data(form):
 def load_user(user_id):
     loop = asyncio.get_event_loop()
     user = asyncio.ensure_future(User.get(user_id))
-    loop.close()
     logger.debug(user)
     return user
 

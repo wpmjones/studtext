@@ -110,7 +110,7 @@ def send_msg():
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")
-        if session["alert"]:
+        if "alert" in session:
             flash(session["alert"])
             session.pop("alert", None)
         return render_template("sendmsg.html",

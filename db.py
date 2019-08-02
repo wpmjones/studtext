@@ -103,10 +103,10 @@ class Recipients:
     def get_groups(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                logger.debug(cursor.mogrify("SELECT corps_id FROM users WHERE id = %s", user_id))
-                cursor.execute("SELECT corps_id FROM users WHERE id = %s", user_id)
+                logger.debug(cursor.mogrify("SELECT corps_id FROM users WHERE id = %s", [user_id]))
+                cursor.execute("SELECT corps_id FROM users WHERE id = %s", [user_id])
                 corps_id = cursor.fetchone[0]
-                cursor.execute("SELECT id, name FROM groups WHERE corps_id = %s", corps_id)
+                cursor.execute("SELECT id, name FROM groups WHERE corps_id = %s", [corps_id])
                 groups = cursor.fetchall()
         cursor.close()
         conn.close()

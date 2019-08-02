@@ -5,7 +5,8 @@ from config import settings
 
 
 def get_db():
-    conn = psycopg2.connect(dbname=settings['pg']['dbname'],
+    conn = psycopg2.connect(host="localhost",
+                            dbname=settings['pg']['dbname'],
                             user=settings['pg']['user'],
                             password=settings['pg']['password'])
     conn.set_session(autocommit=True)

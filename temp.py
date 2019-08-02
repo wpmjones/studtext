@@ -79,9 +79,12 @@ async def protect():
 @app.route("/")
 async def index():
     logger.debug("start index route")
+    logger.debug(current_user)
     if current_user.is_authenticated:
+        logger.debug("Current user is authenticated")
         return redirect(url_for("send_msg"))
     else:
+        logger.debug("Current user is not authenticated")
         return render_template("login.html")
 
 

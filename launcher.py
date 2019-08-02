@@ -36,13 +36,13 @@ def get_google_provider_cfg():
 
 class HomeForm(FlaskForm):
     groups = Recipients.get_groups()
-    logger.debug(groups)
     group = SelectField("Recipients:", choices=groups)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
 class CreateForm(FlaskForm):
     divisions, corps = User.get_corps()
+    logger.debug(corps)
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
 
@@ -91,15 +91,14 @@ def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 def send_msg():
-    logger.debug(current_user)
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
             group = request.form['group']
             message = request.form['msg']
             if group and message:
-                logger.debug(group, message)
-                recipients, phone_nums = Recipients.get_recipients(int(group))
+                logger.debug(f"{message} sending to group id {group}")
+                recipients, phone_nums = Recipients.get_recipients(group)
                 # TODO move messages to separate function
                 # TODO log message to database
                 for phone_num in phone_nums:

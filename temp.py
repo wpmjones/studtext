@@ -31,22 +31,14 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
-loop = asyncio.get_event_loop()
-
-
-# retrieve data from db.py
-def get_data(form):
-    # loop = asyncio.get_event_loop()
-    if form == "groups":
-        groups = loop.run_until_complete(Recipients.get_groups())
-        return groups
-    if form in ("corps", "divisions"):
-        divisions, corps = loop.run_until_complete(User.get_corps())
-        return divisions, corps
 
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
+    if loop is None:
+        loop = asyncio.get_event_loop()
+    while loop.is_running():
+        asyncio.sleep(1)
     user = loop.run_until_complete(User.get(user_id))
     logger.debug(user.name)
     return user
@@ -58,7 +50,10 @@ def get_google_provider_cfg():
 
 
 class HomeForm(FlaskForm):
-    # groups = get_data("groups")
+    if loop is None:
+        loop = asyncio.get_event_loop()
+    while loop.is_running():
+        asyncio.sleep(1)
     groups = loop.run_until_complete(Recipients.get_groups())
     logger.debug(groups)
     group = SelectField("Recipients:", choices=groups)
@@ -66,7 +61,10 @@ class HomeForm(FlaskForm):
 
 
 class CreateForm(FlaskForm):
-    # divisions, corps = get_data("corps")
+    if loop is None:
+        loop = asyncio.get_event_loop()
+    while loop.is_running():
+        asyncio.sleep(1)
     divisions, corps = loop.run_until_complete(User.get_corps())
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)

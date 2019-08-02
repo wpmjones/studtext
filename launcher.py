@@ -36,8 +36,7 @@ def get_google_provider_cfg():
 
 
 class HomeForm(FlaskForm):
-    groups = Recipients.get_groups()
-    group = SelectField("Recipients:", choices=groups, coerce=int)
+    group = SelectField("Recipients:", coerce=int)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
@@ -94,6 +93,7 @@ def logout():
 def send_msg():
     if current_user.is_authenticated:
         form = HomeForm()
+        form.group.choices = Recipients.get_groups(current_user.id)
         if request.method == "POST":
             group = request.form['group']
             message = request.form['msg']
@@ -107,7 +107,7 @@ def send_msg():
                                                         from_=settings['twilio']['phone_num'],
                                                         body=message)
                     Messages.add_message(twilio_msg.sid, current_user.id, recipient[2], group, message)
-                flash(f"Message sent to: {', '.join(recipients)}")
+                flash(f"Message sent to: {', '.join(names)}")
             else:
                 flash("Error: All form fields are required.")
         if "alert" in session:
@@ -163,10 +163,9 @@ def callback():
     if not User.get(unique_id):
         User.create(unique_id, users_name, users_email, picture)
         return redirect(url_for("select_corps"))
-    # Begin user session by logging the user in
     user = User.get(unique_id)
+    # if user is approved for usage, continue, else contact admin
     login_user(user)
-    # Send user back to homepage
     return redirect(url_for("send_msg"))
 
 

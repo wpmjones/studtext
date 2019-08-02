@@ -73,7 +73,7 @@ async def protect():
 
 @app.route("/")
 async def index():
-    logger.debug(current_user)
+    logger.debug(await current_user)
     if current_user.is_authenticated:
         logger.debug("Current user is authenticated")
         return redirect(url_for("send_msg"))
@@ -176,7 +176,7 @@ async def callback():
     # Begin user session by logging the user in
     user = await User.get(unique_id)
     logger.debug(user)
-    await login_user(user)
+    login_user(user)
     # Send user back to homepage
     return redirect(url_for("send_msg"))
 

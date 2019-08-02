@@ -45,13 +45,11 @@ def get_data(form):
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
 async def load_user(user_id):
-    logger.debug("start load_user")
     return await User.get(user_id)
 
 
 # Get Google Provider
 def get_google_provider_cfg():
-    logger.debug("start get_google_provider_cfg")
     return requests.get(google_discovery_url).json()
 
 
@@ -70,13 +68,11 @@ class CreateForm(FlaskForm):
 @app.route("/protected")
 @login_required
 async def protect():
-    logger.debug("start protected route")
     return f"Logged in as: {current_user.id}"
 
 
 @app.route("/")
 async def index():
-    logger.debug("start index route")
     logger.debug(current_user)
     if current_user.is_authenticated:
         logger.debug("Current user is authenticated")
@@ -88,7 +84,6 @@ async def index():
 
 @app.route("/login")
 async def login():
-    logger.debug("start login route")
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -109,7 +104,6 @@ async def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 async def send_msg():
-    logger.debug("start send_msg route")
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
@@ -138,7 +132,6 @@ async def send_msg():
 
 @app.route("/login/callback")
 async def callback():
-    logger.debug("start callback route")
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     # Find out what URL to hit to get tokens that allow you to ask for
@@ -146,6 +139,10 @@ async def callback():
     google_provider_cfg = get_google_provider_cfg()
     token_endpoint = google_provider_cfg["token_endpoint"]
     # Prepare and send a request to get tokens! Yay tokens!
+    logger.debug(token_endpoint)
+    logger.debug(request.url)
+    logger.debug(request.base_url)
+    logger.debug(code)
     token_url, headers, body = client.prepare_token_request(token_endpoint,
                                                             authorization_response=request.url,
                                                             redirect_url=request.base_url,

@@ -171,14 +171,14 @@ def select_corps():
     if current_user.is_authenticated:
         if request.method == "POST":
             logger.debug(request.form)
-            if request.form['division']:
+            if "division" in request.form:
                 form = CorpsForm()
                 form.corps.choices = User.get_corps(request.form['division'])
                 return render_template("corps.html",
                                        form=form,
                                        corps=form.corps.choices,
                                        profile_pic=current_user.profile_pic)
-            if request.form['corps']:
+            if "corps" in request.form:
                 logger.debug("POST from corps")
                 User.link_corps(current_user.id, request.form['corps'])
                 return redirect(url_for("send_msg"))

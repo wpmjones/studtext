@@ -173,7 +173,7 @@ async def callback():
         await User.create(unique_id, users_name, users_email, picture)
         return redirect(url_for("create_user"))
     # Begin user session by logging the user in
-    user = User.get(unique_id)
+    user = await User.get(unique_id)
     login_user(user)
     # Send user back to homepage
     return redirect(url_for("send_msg"))

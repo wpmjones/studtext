@@ -1,7 +1,7 @@
 import quart.flask_patch
 
 import requests
-from secrets import compare_digest
+import json
 from loguru import logger
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user, UserMixin
 from quart import Quart, redirect, request, url_for
@@ -53,25 +53,30 @@ async def login():
     request_uri = client.prepare_request_uri(authorization_endpoint,
                                              redirect_uri=request.base_url + "/callback",
                                              scope=["openid", "email", "profile"])
-    logger.debug(request_uri)
-    if request.method == 'GET':
-        return '''
-               <form method='POST'>
-                <input type='text' name='username' id='username' placeholder='username'></input>
-                <input type='password' name='password' id='password' placeholder='password'></input>
-                <input type='submit' name='submit'></input>
-               </form>
-               '''
+    return redirect(request_uri)
 
-    username = (await request.form)['username']
-    password = (await request.form)['password']
-    if username in users and compare_digest(password, users[username]['password']):
-        user = User()
-        user.id = username
-        login_user(user)
-        return redirect(url_for('protected'))
 
-    return 'Bad login'
+@app.route("/login/callback")
+async def callback():
+    logger.debug("start callback route")
+    code = request.args.get("code")
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg["token_endpoint"]
+    token_url, headers, body = client.prepare_token_request(token_endpoint,
+                                                            authorization_response=request.url,
+                                                            redirect_url=request.base_url,
+                                                            code=code)
+    token_response = requests.post(token_url,
+                                   headers=headers,
+                                   data=body,
+                                   auth=(google_client_id, google_client_secret))
+    client.parse_request_body_response(json.dumps(token_response.json()))
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+    if not userinfo_response.json().get("email_verified"):
+        return "User email not available or not verified by Google.", 400
+    return redirect(url_for("protected"))
 
 
 @app.route('/protected')

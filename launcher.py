@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from loguru import logger
 from db import User, Recipients, Messages
-from flask import Flask, redirect, url_for, request, render_template, flash
+from flask import Flask, redirect, url_for, request, render_template, flash, session
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
@@ -110,8 +110,9 @@ def send_msg():
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")
-        if request.args["alert"]:
-            flash(request.args["alert"])
+        if session["alert"]:
+            flash(session["alert"])
+            session.pop("alert", None)
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.groups,
@@ -184,7 +185,8 @@ def select_corps():
             if "corps" in request.form:
                 logger.debug("POST from corps")
                 User.link_corps(current_user.id, request.form['corps'])
-                return redirect(url_for("send_msg", alert="You are now linked to a corps and can send messages."))
+                session["alert"] = "You are now linked to a corps and can send messages."
+                return redirect(url_for("send_msg"))
             else:
                 logger.debug("POST from neither div nor corps")
                 flash("Error: Somethings has gone wrong. Please try  refreshing the page.")

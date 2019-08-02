@@ -135,7 +135,7 @@ class Messages:
                 sql = ("INSERT INTO messages "
                        "(sid, user_id, phone, group_id, message) "
                        "VALUES (%s, %s, %s, %s, %s)")
-                cursor.execute(sql, [sid, user_id, phone, group_id, message])
+                cursor.execute(sql, [sid, user_id, phone[2:], group_id, message])
         cursor.close()
         conn.close()
         logger.info(f"Twilio Message {sid} added to database.")

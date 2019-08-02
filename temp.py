@@ -83,7 +83,7 @@ async def index():
         return redirect(url_for("send_msg"))
     else:
         logger.debug("Current user is not authenticated")
-        return render_template("login.html")
+        return await render_template("login.html")
 
 
 @app.route("/login")

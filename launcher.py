@@ -4,7 +4,7 @@ import requests
 import json
 from loguru import logger
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user, UserMixin
-from quart import Quart, redirect, request, url_for
+from quart import Quart, redirect, request, url_for, render_template
 from oauthlib.oauth2 import WebApplicationClient
 from config import settings
 
@@ -44,6 +44,18 @@ def user_loader(username):
     user = User()
     user.id = username
     return user
+
+
+@app.route("/")
+async def index():
+    logger.debug("start index route")
+    logger.debug(current_user)
+    if current_user.is_authenticated:
+        logger.debug("Current user is authenticated")
+        return redirect(url_for("protected"))
+    else:
+        logger.debug("Current user is not authenticated")
+        return await render_template("login.html")
 
 
 @app.route('/', methods=['GET', 'POST'])

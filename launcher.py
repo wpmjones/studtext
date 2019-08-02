@@ -42,7 +42,6 @@ class HomeForm(FlaskForm):
 
 class CreateForm(FlaskForm):
     divisions, corps = User.get_corps()
-    logger.debug(corps)
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
 

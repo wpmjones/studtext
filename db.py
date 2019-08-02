@@ -57,8 +57,8 @@ class User(UserMixin):
     def link_corps(id_, corps_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("UPDATE users SET corps_id = %d WHERE id = %s", [corps_id, id_])
-                cursor.execute("SELECT name FROM corps WHERE corps_id = %d", [corps_id])
+                cursor.execute("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_])
+                cursor.execute("SELECT name FROM corps WHERE corps_id = %s", [corps_id])
                 corps_name = cursor.fetchone()[0]
         cursor.close()
         conn.close()
@@ -110,7 +110,7 @@ class Recipients:
                 sql = ("SELECT r.name, r.phone "
                        "FROM recipients r "
                        "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
-                       "WHERE rg.group_id = %d")
+                       "WHERE rg.group_id = %s")
                 logger.debug(cursor.mogrify(sql, [group]))
                 rows = cursor.execute(sql, [group])
                 for row in rows:

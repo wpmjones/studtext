@@ -26,13 +26,12 @@ class User(UserMixin):
             user = await conn.fetchrow(sql)
             if not user:
                 return None
-            user = User(id_=user[0],
-                        name=user[1],
-                        email=user[2],
-                        profile_pic=user[3],
-                        corps_id=user[4]
+            user = User(id_=user['id'],
+                        name=user['name'],
+                        email=user['email'],
+                        profile_pic=user['profile_pic'],
+                        corps_id=user['corps_id']
                         )
-            logger.debug(user)
             return user
 
     @classmethod

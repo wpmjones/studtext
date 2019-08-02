@@ -31,10 +31,12 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
+loop = asyncio.get_event_loop()
+
 
 # retrieve data from db.py
 def get_data(form):
-    loop = asyncio.get_event_loop()
+    # loop = asyncio.get_event_loop()
     if form == "groups":
         groups = loop.run_until_complete(Recipients.get_groups())
         return groups
@@ -45,7 +47,6 @@ def get_data(form):
 # Flask-login helpfer to retrieve a user from our db
 @login_manager.user_loader
 def load_user(user_id):
-    loop = asyncio.get_event_loop()
     user = loop.run_until_complete(User.get(user_id))
     logger.debug(user)
     return user

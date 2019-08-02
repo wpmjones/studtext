@@ -30,12 +30,10 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
-logger.debug("OAuth setup complete")
 
 
 # retrieve data from db.py
 def get_data(form):
-    logger.debug("start get_data")
     loop = asyncio.get_event_loop()
     if form == "groups":
         groups = loop.run_until_complete(Recipients.get_groups())

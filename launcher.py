@@ -169,11 +169,9 @@ def callback():
 @app.route("/corps", methods=["GET", "POST"])
 def select_corps():
     if current_user.is_authenticated:
-        form = DivisionForm()
         if request.method == "POST":
-            logger.debug("Entering POST")
+            logger.debug(request.form)
             if request.form['division']:
-                logger.debug("POST from division")
                 form = CorpsForm()
                 form.corps.choices = User.get_corps(request.form['division'])
                 return render_template("corps.html",
@@ -187,7 +185,7 @@ def select_corps():
             else:
                 logger.debug("POST from neither div nor corps")
                 flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
-            return redirect(url_for("select_corps"))
+        form = DivisionForm()
         return render_template("division.html",
                                form=form,
                                divisions=form.division.choices,

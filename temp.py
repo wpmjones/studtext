@@ -104,6 +104,7 @@ async def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 async def send_msg():
+    logger.debug(current_user)
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
@@ -174,6 +175,7 @@ async def callback():
         return redirect(url_for("create_user"))
     # Begin user session by logging the user in
     user = await User.get(unique_id)
+    logger.debug(user)
     login_user(user)
     # Send user back to homepage
     return redirect(url_for("send_msg"))

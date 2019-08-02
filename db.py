@@ -103,6 +103,7 @@ class Recipients:
     def get_groups(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
+                logger.debug(cursor.mogrify("SELECT corps_id FROM users WHERE id = %s", user_id))
                 cursor.execute("SELECT corps_id FROM users WHERE id = %s", user_id)
                 corps_id = cursor.fetchone[0]
                 cursor.execute("SELECT id, name FROM groups WHERE corps_id = %s", corps_id)
@@ -134,7 +135,6 @@ class Messages:
                 sql = ("INSERT INTO messages "
                        "(sid, user_id, recipient_id, group_id, message) "
                        "VALUES (%s, %s, %s, %s, %s)")
-                logger.debug(cursor.mogrify(sql, [sid, user_id, recipient_id, group_id, message]))
                 cursor.execute(sql, [sid, user_id, recipient_id, group_id, message])
         cursor.close()
         conn.close()

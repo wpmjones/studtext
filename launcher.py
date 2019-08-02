@@ -171,6 +171,7 @@ def select_corps():
     if current_user.is_authenticated:
         form = DivisionForm()
         if request.method == "POST":
+            logger.debug("Entering POST")
             if request.form['division']:
                 logger.debug("POST from division")
                 form = CorpsForm()

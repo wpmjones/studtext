@@ -116,6 +116,7 @@ def send_msg():
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.group.choices,
+                               user_name=current_user.name,
                                profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))

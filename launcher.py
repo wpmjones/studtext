@@ -109,8 +109,8 @@ def send_msg():
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")
-        if request.alert:
-            flash(request.alert)
+        if request.args["alert"]:
+            flash(request.args["alert"])
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.groups,

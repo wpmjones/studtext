@@ -22,7 +22,7 @@ class User(UserMixin):
     async def get(cls, user_id):
         pool = await get_db()
         async with pool.acquire() as conn:
-            user = await conn.fetchrow(f"SELECT * FROM user WHERE id = {user_id}")
+            user = await conn.fetchrow(f"SELECT * FROM user WHERE id = '{user_id}'")
             if not user:
                 return None
 

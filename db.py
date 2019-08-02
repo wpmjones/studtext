@@ -59,7 +59,7 @@ class User(UserMixin):
             with conn.cursor() as cursor:
                 logger.debug(cursor.mogrify("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_]))
                 cursor.execute("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_])
-                cursor.execute("SELECT name FROM corps WHERE corps_id = %s", [corps_id])
+                cursor.execute("SELECT name FROM corps WHERE id = %s", [corps_id])
                 corps_name = cursor.fetchone()[0]
         cursor.close()
         conn.close()

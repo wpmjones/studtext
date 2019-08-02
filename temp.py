@@ -3,6 +3,7 @@ import quart.flask_patch
 import asyncio
 import requests
 import json
+import time
 from loguru import logger
 from db import User, Recipients
 from quart import Quart, redirect, url_for, request, render_template, flash
@@ -39,7 +40,7 @@ loop = asyncio.get_event_loop()
 @login_manager.user_loader
 def load_user(user_id):
     while loop.is_running():
-        asyncio.sleep(1)
+        time.sleep(1)
     user = loop.run_until_complete(User.get(user_id))
     logger.debug(user.name)
     return user
@@ -52,7 +53,7 @@ def get_google_provider_cfg():
 
 class HomeForm(FlaskForm):
     while loop.is_running():
-        asyncio.sleep(1)
+        time.sleep(1)
     groups = loop.run_until_complete(Recipients.get_groups())
     logger.debug(groups)
     group = SelectField("Recipients:", choices=groups)
@@ -61,7 +62,7 @@ class HomeForm(FlaskForm):
 
 class CreateForm(FlaskForm):
     while loop.is_running():
-        asyncio.sleep(1)
+        time.sleep(1)
     divisions, corps = loop.run_until_complete(User.get_corps())
     division = SelectField("Division:", choices=divisions)
     corps = SelectField("Corps:", choices=corps)
@@ -76,7 +77,7 @@ async def protect():
 @app.route("/")
 async def index():
     while loop.is_running():
-        await asyncio.sleep(1)
+        time.sleep(1)
     if current_user.is_authenticated:
         logger.debug("Current user is authenticated")
         return redirect(url_for("send_msg"))

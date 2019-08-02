@@ -102,7 +102,7 @@ def send_msg():
                 recipients = Recipients.get_recipients(group)
                 names = []
                 for recipient in recipients:
-                    names += recipient[0]
+                    names.append(recipient[0])
                     twilio_msg = twilio.messages.create(to=recipient[1],
                                                         from_=settings['twilio']['phone_num'],
                                                         body=message)

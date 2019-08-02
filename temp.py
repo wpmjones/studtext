@@ -140,8 +140,8 @@ async def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
     # Prepare and send a request to get tokens! Yay tokens!
     logger.debug(token_endpoint)
-    logger.debug(request.url)
-    logger.debug(request.base_url)
+    logger.debug(await request.url)
+    logger.debug(await request.base_url)
     logger.debug(code)
     token_url, headers, body = client.prepare_token_request(token_endpoint,
                                                             authorization_response=request.url,

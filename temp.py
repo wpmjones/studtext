@@ -176,7 +176,7 @@ async def callback():
     # Begin user session by logging the user in
     user = await User.get(unique_id)
     logger.debug(user)
-    login_user(user)
+    await login_user(user)
     # Send user back to homepage
     return redirect(url_for("send_msg"))
 

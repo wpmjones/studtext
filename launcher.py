@@ -90,7 +90,7 @@ def logout():
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
-def send_msg():
+def send_msg(alert: str = None):
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
@@ -109,6 +109,8 @@ def send_msg():
                 flash(f"Message sent to: {', '.join(recipients)}")
             else:
                 flash("Error: All form fields are required.")
+        if alert:
+            flash(alert)
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.groups,
@@ -181,7 +183,7 @@ def select_corps():
             if "corps" in request.form:
                 logger.debug("POST from corps")
                 User.link_corps(current_user.id, request.form['corps'])
-                return redirect(url_for("send_msg"))
+                return redirect(url_for("send_msg", alert="You are now linked to a corps and can send messages."))
             else:
                 logger.debug("POST from neither div nor corps")
                 flash("Error: Somethings has gone wrong. Please try  refreshing the page.")

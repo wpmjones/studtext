@@ -91,6 +91,9 @@ def logout():
 
 @app.route("/send_msg", methods=["GET", "POST"])
 def send_msg():
+    # TODO need to test for approval as well as authenticated
+    # TODO set up a way to handle responses
+    # TODO set up initial message to new recipient (if recipient id not in messages database)
     if current_user.is_authenticated:
         form = HomeForm()
         form.group.choices = Recipients.get_groups(current_user.id)
@@ -174,7 +177,6 @@ def callback():
 def select_corps():
     if current_user.is_authenticated:
         if request.method == "POST":
-            logger.debug(request.form)
             if "division" in request.form:
                 form = CorpsForm()
                 form.corps.choices = User.get_corps(request.form['division'])
@@ -183,12 +185,11 @@ def select_corps():
                                        corps=form.corps.choices,
                                        profile_pic=current_user.profile_pic)
             if "corps" in request.form:
-                logger.debug("POST from corps")
                 User.link_corps(current_user.id, request.form['corps'])
+                # TODO Redirect to approval wait page
                 session["alert"] = "You are now linked to a corps and can send messages."
                 return redirect(url_for("send_msg"))
             else:
-                logger.debug("POST from neither div nor corps")
                 flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
         form = DivisionForm()
         return render_template("division.html",
@@ -197,3 +198,8 @@ def select_corps():
                                profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))
+
+
+@app.route("/help")
+def app_help():
+    return render_template("help.html")

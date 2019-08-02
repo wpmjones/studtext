@@ -32,6 +32,7 @@ class User(UserMixin):
                         profile_pic=user[3],
                         corps_id=user[4]
                         )
+            logger.debug(user)
             return user
 
     @classmethod

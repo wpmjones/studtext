@@ -14,7 +14,6 @@ from twilio.rest import Client
 from config import settings
 
 app = Quart(__name__)
-# app.config['SECRET_KEY'] = settings['flask']['key']
 app.secret_key = settings['flask']['key']
 
 # Set up Twilio
@@ -31,6 +30,7 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
+logger.debug("OAuth setup complete")
 
 
 # retrieve data from db.py
@@ -69,6 +69,12 @@ class CreateForm(FlaskForm):
     corps = SelectField("Corps:", choices=corps)
 
 
+@app.route("/protected")
+@login_required
+async def protect():
+    return f"Logged in as: {current_user.id}"
+
+
 @app.route("/")
 async def index():
     logger.debug("start index route")
@@ -105,10 +111,9 @@ async def send_msg():
     if current_user.is_authenticated:
         form = HomeForm()
         if request.method == "POST":
-            req_form = await request.form
-            if req_form['group'] and req_form['msg']:
-                group = req_form['group']
-                message = req_form['msg']
+            group = (await request.form)['group']
+            message = (await request.form)['msg']
+            if group and message:
                 logger.debug(group, message)
                 recipients, phone_nums = await Recipients.get_recipients(int(group))
                 # TODO move messages to separate function

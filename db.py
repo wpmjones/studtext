@@ -69,7 +69,7 @@ class User(UserMixin):
     def get_divisions():
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT id, name FROM divisions ORDER BY id")
+                cursor.execute("SELECT id, name FROM divisions WHERE id > 0 ORDER BY id")
                 divisions = cursor.fetchall()
         cursor.close()
         conn.close()

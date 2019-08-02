@@ -172,6 +172,7 @@ def select_corps():
         form = DivisionForm()
         if request.method == "POST":
             if request.form['division']:
+                logger.debug("POST from division")
                 form = CorpsForm()
                 form.corps.choices = User.get_corps(request.form['division'])
                 return render_template("corps.html",
@@ -183,6 +184,7 @@ def select_corps():
                 User.link_corps(current_user.id, request.form['corps'])
                 return redirect(url_for("send_msg"))
             else:
+                logger.debug("POST from neither div nor corps")
                 flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
             return redirect(url_for("select_corps"))
         return render_template("division.html",

@@ -7,21 +7,17 @@
     <title>Salvation Army Texting App</title>
 </head>
 <body>
-    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">St. Petersburg Text App</h2></div>
+    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Salvation Army Text App</h2></div>
     <div class="container">
         <form action="" method="post" role="form">
             {{ form.csrf }}
             <div class="form-group">
-                <label for="group">Group:</label>
-                <select class="form-control" id="group" name="group">
-                    {% for choice in choices %}
-                        <option value="{{ choice[0] }}">{{ choice[1] }}</option>
-                    {% else %}
-                        <option value="0">No groups available</option>
+                <label for="division">Division:</label>
+                <select class="form-control" id="division" name="division">
+                    {% for division in divisions %}
+                        <option value="{{ division[0] }}">{{ division[1] }}</option>
                     {% endfor %}
                 </select>
-                <label for="msg">Message:</label>
-                <textarea class="form-control" id="msg" name="msg" rows="3" placeholder="Type message here"></textarea>
             </div>
             <button type="submit" class="btn btn-success">
                 Submit

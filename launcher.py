@@ -36,14 +36,17 @@ def get_google_provider_cfg():
 
 class HomeForm(FlaskForm):
     groups = Recipients.get_groups()
-    group = SelectField("Recipients:", choices=groups)
+    group = SelectField("Recipients:", choices=groups, coerce=int)
     msg = TextAreaField("Message:", validators=[validators.required()])
 
 
-class CreateForm(FlaskForm):
-    divisions, corps = User.get_corps()
-    division = SelectField("Division:", choices=divisions)
-    corps = SelectField("Corps:", choices=corps)
+class DivisionForm(FlaskForm):
+    divisions = User.get_divisions()
+    division = SelectField("Division:", choices=divisions, coerce=int)
+
+
+class CorpsForm(FlaskForm):
+    corps = SelectField("Corps:", coerce=int)
 
 
 # Flask-login helper to retrieve a user from our db
@@ -55,7 +58,7 @@ def load_user(user_id):
 @app.route("/protected")
 @login_required
 def protect():
-    return f"Logged in as: {current_user.id}"
+    return f"Logged in as: {current_user.name}"
 
 
 @app.route("/")
@@ -157,7 +160,7 @@ def callback():
     # Check if user exists. If not, go to create page (to select corps)
     if not User.get(unique_id):
         User.create(unique_id, users_name, users_email, picture)
-        return redirect(url_for("create_user"))
+        return redirect(url_for("select_corps"))
     # Begin user session by logging the user in
     user = User.get(unique_id)
     login_user(user)
@@ -165,27 +168,27 @@ def callback():
     return redirect(url_for("send_msg"))
 
 
-@app.route("/create")
-def create_user():
-    logger.debug("start create route")
+@app.route("/corps")
+def select_corps():
     if current_user.is_authenticated:
-        form = CreateForm()
+        form = DivisionForm()
         if request.method == "POST":
-            req_form = request.form
-            div_id = req_form['division']
-            corps_id = req_form['corps']
-            correct_div_id = form.corps[corps_id - 1][2]
-            logger.debug(f"Selected division: {div_id} - Selected corps: {corps_id} - DivForThatCorps: {correct_div_id}")
-            if div_id == correct_div_id:
-                User.link_corps(current_user.id, corps_id)
+            if request.form['division']:
+                form = CorpsForm()
+                form.corps.choices = User.get_corps(request.form['division'])
+                return render_template("corps.html",
+                                       form=form,
+                                       corps=form.corps.choices,
+                                       profile_pic=current_user.profile_pic)
+            if request.form['corps']:
+                User.link_corps(current_user.id, request.form['corps'])
                 return redirect(url_for("send_msg"))
             else:
-                flash("Error: Corps does not match the selected division.")
-            return redirect(url_for("send_msg"))
-        return render_template("create.html",
+                flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
+            return redirect(url_for("select_corps"))
+        return render_template("division.html",
                                form=form,
-                               divisions=form.divisions,
-                               corps=form.corps,
+                               divisions=form.division.choices,
                                profile_pic=current_user.profile_pic)
     else:
         return redirect(url_for("login"))

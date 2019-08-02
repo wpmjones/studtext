@@ -65,16 +65,24 @@ class User(UserMixin):
         logger.info(f"User: {id_} successfully linked to {corps_name} corps.")
 
     @staticmethod
-    def get_corps():
+    def get_divisions():
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT id, name FROM divisions ORDER BY id")
                 divisions = cursor.fetchall()
-                cursor.execute("SELECT id, name, div_id FROM corps ORDER BY id")
+        cursor.close()
+        conn.close()
+        return divisions
+
+    @staticmethod
+    def get_corps(div_id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, name FROM corps WHERE div_id = %s ORDER BY id", [div_id])
                 corps = cursor.fetchall()
         cursor.close()
         conn.close()
-        return divisions, corps
+        return corps
 
 
 class Recipients:
@@ -111,7 +119,6 @@ class Recipients:
                        "FROM recipients r "
                        "INNER JOIN recipient_groups rg on r.id = rg.recipient_id "
                        "WHERE rg.group_id = %s")
-                logger.debug(cursor.mogrify(sql, [group]))
                 cursor.execute(sql, [group])
                 rows = cursor.fetchall()
                 for row in rows:

@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
-    <title>New Text User</title>
+    <title>Salvation Army Texting App</title>
 </head>
 <body>
-    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Salvation Army Text App</h2></div>
+    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Corps Selection</h2></div>
     <div class="container">
         <form action="" method="post" role="form">
             {{ form.csrf }}
             <div class="form-group">
-                <label for="division">Division:</label>
-                <select class="form-control" id="division" name="division">
-                    {% for division in divisions %}
-                        <option value="{{ division[0] }}">{{ division[1] }}</option>
-                    {% endfor %}
-                </select>
                 <label for="corps">Corps:</label>
                 <select class="form-control" id="corps" name="corps">
                     {% for crp in corps %}

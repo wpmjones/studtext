@@ -9,12 +9,19 @@
 <body>
     <div class="container mt-2"><h2>Users needing approval</h2></div>
     <div class="container">
-        <table>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Corps</th>
+                </tr>
+            </thead>
             {% for user in users %}
                 <tr>
-                    <td>{{ user[1] }}</td>
+                    <td><img src="{{ user[1] }}" style="height: 25px;" class="img-fluid rounded-circle mr-2"></td>
                     <td>{{ user[0] }}</td>
-                    <td>{{ user[2] ~ "(" ~ user[3] ~ ")" }}</td>
+                    <td>{{ user[2] ~ " (" ~ user[3] ~ ")" }}</td>
                 </tr>
             {% endfor %}
         </table>

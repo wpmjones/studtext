@@ -26,7 +26,10 @@ class User(UserMixin):
     @property
     def is_active(self):
         # TODO make sure this works, check for is_approved
-        return True
+        if self.is_admin == 1:
+            return True
+        else:
+            return False
 
     @staticmethod
     def get(user_id):

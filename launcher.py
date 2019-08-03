@@ -62,7 +62,9 @@ def load_user(user_id):
 @login_required
 def protect():
     if current_user.is_authenticated:
-        return f"Logged in as: {current_user.name}"
+        return (f"Logged in as: {current_user.name}\n"
+                f"Assigned corps: {current_user.corps_id}\n"
+                f"is_approved: {current_user.is_approved}")
     else:
         return render_template("login.html")
 

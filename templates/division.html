@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
-    <title>Salvation Army Texting App</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block content %}
     <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Division Selection</h2></div>
     <div class="container">
         <form action="" method="post" role="form">
@@ -41,5 +34,4 @@
         {% endwith %}
     </div>
     <div class="container"><a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a></div>
-</body>
-</html>
+{% endblock %}

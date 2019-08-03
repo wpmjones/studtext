@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
-    <title>Salvation Army Texting App</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block content %}
     <div class="container mt-2"><h2>Users needing approval</h2></div>
     <div class="container">
         <table class="table" width="100%">
@@ -33,5 +26,4 @@
         <a href="/send_msg"><button class="btn btn-primary" role="button">Home</button></a>
         <a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a>
     </div>
-</body>
-</html>
+{% endblock %}

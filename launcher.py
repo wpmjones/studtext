@@ -60,13 +60,11 @@ def load_user(user_id):
 
 
 @app.route("/protected")
+@login_required
 def protect():
-    if current_user.is_authenticated:
-        return (f"Logged in as: {current_user.name}<br />"
-                f"Assigned corps: {current_user.corps_id}<br />"
-                f"is_approved: {current_user.is_approved}")
-    else:
-        return render_template("login.html")
+    return (f"Logged in as: {current_user.name}<br />"
+            f"Assigned corps: {current_user.corps_id}<br />"
+            f"is_approved: {current_user.is_approved}")
 
 
 @app.route("/")
@@ -104,7 +102,7 @@ def logout():
 def send_msg():
     # TODO set up a way to handle responses
     # TODO set up initial message to new recipient (if recipient id not in messages database)
-    if current_user.is_authenticated and current_user.is_approved:
+    if current_user.is_approved:
         form = HomeForm()
         form.group.choices = Recipients.get_groups(current_user.id)
         if request.method == "POST":
@@ -132,10 +130,7 @@ def send_msg():
                                user_name=current_user.name,
                                profile_pic=current_user.profile_pic)
     else:
-        if not current_user.is_authenticated:
-            return redirect(url_for("login"))
-        if not current_user.is_approved:
-            return render_template("approval.html", name=current_user.name)
+        return render_template("approval.html", name=current_user.name)
 
 
 @app.route("/login/callback")
@@ -186,66 +181,58 @@ def callback():
 
 
 @app.route("/corps", methods=["GET", "POST"])
+@login_required
 def select_corps():
-    if current_user.is_authenticated:
-        if request.method == "POST":
-            if "division" in request.form:
-                form = CorpsForm()
-                form.corps.choices = User.get_corps(request.form['division'])
-                return render_template("corps.html",
-                                       form=form,
-                                       corps=form.corps.choices,
-                                       profile_pic=current_user.profile_pic)
-            if "corps" in request.form:
-                session["corps"] = User.link_corps(current_user.id, request.form['corps'])
-                if not current_user.is_approved:
-                    return redirect(url_for("approval"))
-                session["alert"] = "You are now linked to a corps and can send messages."
-                return redirect(url_for("send_msg"))
-            else:
-                flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
-        form = DivisionForm()
-        return render_template("division.html",
-                               form=form,
-                               divisions=form.division.choices,
-                               profile_pic=current_user.profile_pic)
-    else:
-        return redirect(url_for("login"))
+    if request.method == "POST":
+        if "division" in request.form:
+            form = CorpsForm()
+            form.corps.choices = User.get_corps(request.form['division'])
+            return render_template("corps.html",
+                                   form=form,
+                                   corps=form.corps.choices,
+                                   profile_pic=current_user.profile_pic)
+        if "corps" in request.form:
+            session["corps"] = User.link_corps(current_user.id, request.form['corps'])
+            if not current_user.is_approved:
+                return redirect(url_for("approval"))
+            session["alert"] = "You are now linked to a corps and can send messages."
+            return redirect(url_for("send_msg"))
+        else:
+            flash("Error: Somethings has gone wrong. Please try  refreshing the page.")
+    form = DivisionForm()
+    return render_template("division.html",
+                           form=form,
+                           divisions=form.division.choices,
+                           profile_pic=current_user.profile_pic)
 
 
 @app.route("/approve")
+@login_required
 def approve():
-    if current_user.is_authenticated:
-        # TODO check for is_admin
-        return render_template("approve.html", users=User.get_unapproved())
-    else:
-        return redirect(url_for("login"))
+    # TODO check for is_admin
+    return render_template("approve.html", users=User.get_unapproved())
 
 
 @app.route("/yes")
+@login_required
 def approve_user():
-    if current_user.is_authenticated:
-        user_id = request.args.get['uid']
-        # TODO More to do here
-        # Maybe check to see if there are any more unapproved users before going to send_msg
-        return redirect(url_for("send_msg"))
-    else:
-        return redirect(url_for("login"))
+    user_id = request.args.get['uid']
+    # TODO More to do here
+    # Maybe check to see if there are any more unapproved users before going to send_msg
+    return redirect(url_for("send_msg"))
 
 
 @app.route("/approval")
+@login_required
 def approval():
-    if current_user.is_authenticated:
-        user_name = current_user.name
-        corps_name = session["corps"]
-        body = f"{user_name} has requested access for {corps_name}. https://satext.com/approve"
-        twilio_msg = twilio.messages.create(to="+16783797611",
-                                            from_=settings['twilio']['phone_num'],
-                                            body=body)
-        Messages.add_message(twilio_msg.sid, "SYSTEM", 1, 0, body)
-        return render_template("approval.html", name=current_user.name)
-    else:
-        return redirect(url_for("login"))
+    user_name = current_user.name
+    corps_name = session["corps"]
+    body = f"{user_name} has requested access for {corps_name}. https://satext.com/approve"
+    twilio_msg = twilio.messages.create(to="+16783797611",
+                                        from_=settings['twilio']['phone_num'],
+                                        body=body)
+    Messages.add_message(twilio_msg.sid, "SYSTEM", 1, 0, body)
+    return render_template("approval.html", name=current_user.name)
 
 
 @app.route("/help")

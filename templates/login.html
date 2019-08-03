@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
-    <title>Salvation Army Texting App</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block content %}
     <div class="container mt-2">
-        <h2>Sallie Texts</h2>
+        <h2>Salvation Army Texting</h2>
         <p>This app is intended for use by Salvation Army personnel only.  You must log in via Google in order to send
         text messages.  Thank you!</p>
         <p>If you have any questions or concerns, please reach out to the corps officers.</p>
         <a href="/login"><button class="btn btn-success" role="button">Google Login</button></a>
     </div>
-</body>
-</html>
+{% endblock %}

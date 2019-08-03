@@ -58,7 +58,10 @@ def load_user(user_id):
 @app.route("/protected")
 @login_required
 def protect():
-    return f"Logged in as: {current_user.name}"
+    if current_user.is_authenticated:
+        return f"Logged in as: {current_user.name}"
+    else:
+        return render_template("login.html")
 
 
 @app.route("/")
@@ -85,6 +88,8 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    session.pop("alert", None)
+    session.pop("corps", None)
     logout_user()
     return redirect(url_for("login"))
 
@@ -168,7 +173,6 @@ def callback():
         User.create(unique_id, users_name, users_email, picture)
         return redirect(url_for("select_corps"))
     user = User.get(unique_id)
-    # if user is approved for usage, continue, else contact admin
     login_user(user)
     return redirect(url_for("send_msg"))
 
@@ -185,8 +189,9 @@ def select_corps():
                                        corps=form.corps.choices,
                                        profile_pic=current_user.profile_pic)
             if "corps" in request.form:
-                User.link_corps(current_user.id, request.form['corps'])
-                # TODO Redirect to approval wait page
+                session["corps"] = User.link_corps(current_user.id, request.form['corps'])
+                if not current_user.is_approved:
+                    return redirect(url_for("approval"))
                 session["alert"] = "You are now linked to a corps and can send messages."
                 return redirect(url_for("send_msg"))
             else:
@@ -200,6 +205,34 @@ def select_corps():
         return redirect(url_for("login"))
 
 
+@app.route("/approve")
+def approve():
+    if current_user.is_authenticated:
+        return render_template("approve.html", users=User.get_unapproved())
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/approval")
+def approval():
+    if current_user.is_authenticated:
+        user_name = current_user.name
+        corps_name = session["corps"]
+        body = f"{user_name} has requested access for {corps_name}. https://satext.com/approve"
+        twilio_msg = twilio.messages.create(to="+16783797611",
+                                            from_=settings['twilio']['phone_num'],
+                                            body=body)
+        Messages.add_message(twilio_msg.sid, "SYSTEM", 1, 0, body)
+        return render_template("approval.html", name=current_user.name)
+    else:
+        return redirect(url_for("login"))
+
+
 @app.route("/help")
 def app_help():
     return render_template("help.html")
+
+
+@app.route("/contact")
+def contact_us():
+    return render_template("contactus.html")

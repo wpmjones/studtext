@@ -9,36 +9,12 @@
 <body>
     <div class="container mt-2"><h2>Help and Information</h2></div>
     <div class="container">
-        <form action="" method="post" role="form">
-            {{ form.csrf }}
-            <div class="form-group">
-                <label for="division">Division:</label>
-                <select class="form-control" id="division" name="division">
-                    {% for division in divisions %}
-                        <option value="{{ division[0] }}">{{ division[1] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success">
-                Submit
-            </button>
-        </form>
+        Thank you for using satext.com!  When you log in with your Google account for the first time, you will be
+        asked to select your division and corps.  Then your account must be approved by an administrator.  If you are
+        the first user for your corps, after approval, you will need to set up groups (Band, Songsters, Staff, etc.).
+        Each group can have multiple recipients and recipiients can be parts of more than one group.<br />
         <br />
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for message in messages %}
-                    {% if "Error" not in message[1]: %}
-                        <div class="alert alert-info">
-                            <strong>Success! </strong> {{ message[1] }}
-                        </div>
-                    {% else %}
-                        <div class="alert alert-warning">
-                            {{ message[1] }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        If you have questions or you have ideas to improve the app, please <a href="/contact">let us know here.</a>
     </div>
     <div class="container"><a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a></div>
 </body>

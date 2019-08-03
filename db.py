@@ -14,13 +14,15 @@ def get_db():
 
 
 class User(UserMixin):
-    def __init__(self, id_, name, email, profile_pic, corps_id):
+    def __init__(self, id_, name, email, profile_pic, corps_id, is_admin, is_approved):
         # TODO add roles for users (who they can send to)
         self.id = id_
         self.name = name
         self.email = email
         self.profile_pic = profile_pic
         self.corps_id = corps_id
+        self.is_admin = is_admin
+        self.is_approved = is_approved
 
     @staticmethod
     def get(user_id):
@@ -37,13 +39,28 @@ class User(UserMixin):
                     name=user[1],
                     email=user[2],
                     profile_pic=user[3],
-                    corps_id=user[4]
+                    corps_id=user[4],
+                    is_admin=user[5],
+                    is_approved=user[6]
                     )
         return user
 
     @staticmethod
+    def get_unapproved():
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                sql = ("SELECT u.name, u.profile_pic, c.name as corps, d.name as div "
+                       "FROM users u "
+                       "INNER JOIN corps c ON u.corps_id = c.id "
+                       "INNER JOIN divisions d ON c.div_id = d.id")
+                cursor.execute(sql)
+                users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return users
+
+    @staticmethod
     def create(id_, name, email, profile_pic):
-        # TODO send welcome message via Twilio
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO user (id, name, email, profile_pic) "
@@ -64,6 +81,7 @@ class User(UserMixin):
         cursor.close()
         conn.close()
         logger.info(f"User: {id_} successfully linked to {corps_name} corps.")
+        return corps_name
 
     @staticmethod
     def get_divisions():
@@ -89,6 +107,7 @@ class User(UserMixin):
 class Recipients:
     @staticmethod
     def create(name, phone):
+        # TODO send welcome message via Twilio
         # TODO add html to add recipients
         with get_db() as conn:
             with conn.cursor() as cursor:

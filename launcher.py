@@ -29,6 +29,9 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
+# TODO Add favicon
+# TODO can you add a bookmark link?
+
 
 # Get Google Provider
 def get_google_provider_cfg():

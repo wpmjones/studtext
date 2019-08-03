@@ -208,7 +208,9 @@ def select_corps():
 @app.route("/approve")
 def approve():
     if current_user.is_authenticated:
-        return render_template("approve.html", users=User.get_unapproved())
+        users = User.get_unapproved()
+        logger.debug(users)
+        return render_template("approve.html", users=users)
     else:
         return redirect(url_for("login"))
 

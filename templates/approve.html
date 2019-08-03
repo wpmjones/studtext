@@ -10,13 +10,13 @@
     <div class="container mt-2"><h2>Users needing approval</h2></div>
     <div class="container">
         <table>
-            {{ for user in users }}
+            {% for user in users %}
                 <tr>
                     <td>{{ user[1] }}</td>
                     <td>{{ user[0] }}</td>
                     <td>{{ user[2] ~ "(" ~ user[3] ~ ")" }}</td>
                 </tr>
-            {{ endfor }}
+            {% endfor %}
         </table>
     </div>
     <div class="container">

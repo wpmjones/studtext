@@ -15,7 +15,6 @@ def get_db():
 
 class User(UserMixin):
     def __init__(self, id_, name, email, profile_pic, corps_id, is_admin, is_approved):
-        # TODO add roles for users (who they can send to)
         self.id = id_
         self.name = name
         self.email = email
@@ -23,6 +22,11 @@ class User(UserMixin):
         self.corps_id = corps_id
         self.is_admin = is_admin
         self.is_approved = is_approved
+
+    @property
+    def is_active(self):
+        # TODO make sure this works, check for is_approved
+        return True
 
     @staticmethod
     def get(user_id):

@@ -49,7 +49,7 @@ class User(UserMixin):
     def get_unapproved():
         with get_db() as conn:
             with conn.cursor() as cursor:
-                sql = ("SELECT u.name, u.profile_pic, c.name as corps, d.name as div "
+                sql = ("SELECT u.id, u.name, u.profile_pic, c.name as corps, d.name as div "
                        "FROM users u "
                        "INNER JOIN corps c ON u.corps_id = c.id "
                        "INNER JOIN divisions d ON c.div_id = d.id")

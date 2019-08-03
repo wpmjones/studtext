@@ -5,7 +5,9 @@ Python using Flask, Twilio, WTForms, and psycopg2.  Authentication is handled by
 thanks to [this sweet tutorial](https://realpython.com/flask-google-login/) from 
 [realpython.com](https://realpython.com).
 
-To do:
+### To do:
+
 Finish up approval process for new users
+
 Allow users to update their address books
 

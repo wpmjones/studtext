@@ -20,6 +20,7 @@ twilio = Client(settings['twilio']['sid'], settings['twilio']['token'])
 # Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "/login"
 
 # Google Configuration
 google_client_id = settings['google']['id']
@@ -99,6 +100,7 @@ def logout():
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
+@login_required
 def send_msg():
     # TODO set up a way to handle responses
     # TODO set up initial message to new recipient (if recipient id not in messages database)

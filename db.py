@@ -23,14 +23,6 @@ class User(UserMixin):
         self.is_admin = is_admin
         self.is_approved = is_approved
 
-    @property
-    def is_active(self):
-        # TODO make sure this works, check for is_approved
-        if self.is_admin == 1:
-            return True
-        else:
-            return False
-
     @staticmethod
     def get(user_id):
         with get_db() as conn:

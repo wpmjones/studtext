@@ -67,7 +67,7 @@ class User(UserMixin):
     def create(id_, name, email, profile_pic):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("INSERT INTO user (id, name, email, profile_pic) "
+                cursor.execute("INSERT INTO users (id, name, email, profile_pic) "
                                "VALUES (%s, %s, %s, %s)",
                                [id_, name, email, profile_pic])
         cursor.close()

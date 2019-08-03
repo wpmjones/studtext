@@ -95,6 +95,7 @@ def logout():
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
+@login_required
 def send_msg():
     # TODO need to test for approval as well as authenticated
     # TODO set up a way to handle responses
@@ -208,7 +209,19 @@ def select_corps():
 @app.route("/approve")
 def approve():
     if current_user.is_authenticated:
+        # TODO check for is_admin
         return render_template("approve.html", users=User.get_unapproved())
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/yes")
+def approve_user():
+    if current_user.is_authenticated:
+        user_id = request.args.get['uid']
+        # TODO More to do here
+        # Maybe check to see if there are any more unapproved users before going to send_msg
+        return redirect(url_for("send_msg"))
     else:
         return redirect(url_for("login"))
 

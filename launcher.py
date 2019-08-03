@@ -130,7 +130,10 @@ def send_msg():
                                user_name=current_user.name,
                                profile_pic=current_user.profile_pic)
     else:
-        return redirect(url_for("login"))
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+        if not current_user.is_approved:
+            return render_template("approval.html", name=current_user.name)
 
 
 @app.route("/login/callback")

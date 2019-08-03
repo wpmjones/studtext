@@ -12,9 +12,9 @@
         <table>
             {{ for user in users }}
                 <tr>
-                    <td>{{ user.profile_pic }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.corps ~ "(" ~ user.div ~ ")" }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[2] ~ "(" ~ user[3] ~ ")" }}</td>
                 </tr>
             {{ endfor }}
         </table>

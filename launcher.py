@@ -59,11 +59,10 @@ def load_user(user_id):
 
 
 @app.route("/protected")
-@login_required
 def protect():
     if current_user.is_authenticated:
-        return (f"Logged in as: {current_user.name}\n"
-                f"Assigned corps: {current_user.corps_id}\n"
+        return (f"Logged in as: {current_user.name}<br />"
+                f"Assigned corps: {current_user.corps_id}<br />"
                 f"is_approved: {current_user.is_approved}")
     else:
         return render_template("login.html")
@@ -100,12 +99,10 @@ def logout():
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
-@login_required
 def send_msg():
-    # TODO need to test for approval as well as authenticated
     # TODO set up a way to handle responses
     # TODO set up initial message to new recipient (if recipient id not in messages database)
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.is_approved:
         form = HomeForm()
         form.group.choices = Recipients.get_groups(current_user.id)
         if request.method == "POST":

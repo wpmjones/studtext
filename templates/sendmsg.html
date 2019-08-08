@@ -28,9 +28,13 @@
                         <div class="alert alert-info">
                             <strong>{{ category }}!</strong> {{ message[1] }}
                         </div>
-                    {% else category == "Error": %}
+                    {% elif category == "Error": %}
                         <div class="alert alert-warning">
                             <strong>{{ category }}!</strong> {{ message[1] }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            {{ message[1] }}
                         </div>
                     {% endif %}
                 {% endfor %}

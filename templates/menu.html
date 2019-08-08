@@ -2,16 +2,18 @@
 {% block content %}
     <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Corps Management</h2></div>
     <div class="container">
+        <h2>What would you like to do?</h2>
         <form action="" method="post" role="form">
             {{ form.csrf }}
-            <div class="form-group">
-                <label for="actions">What would you like to do?</label>
-                <select class="form-control" id="actions" name="actions">
-                    <option value="1">Add a recipient</option>
-                    <option value="2">Manage a recipient</option>
-                    <option value="3">Add a group</option>
-                    <option value="4">Remove a group</option>
-                </select>
+            <div class="form-check">
+                <input class="form-ccheck-input" type="radio" id="actions1" name="actions" value="1">
+                <label class="form-check-label" for="actions1">Add a recipient</label>
+                <input class="form-ccheck-input" type="radio" id="actions2" name="actions" value="2">
+                <label class="form-check-label" for="actions2">Manage a recipient</label>
+                <input class="form-ccheck-input" type="radio" id="actions3" name="actions" value="3">
+                <label class="form-check-label" for="actions3">Add a group</label>
+                <input class="form-ccheck-input" type="radio" id="actions4" name="actions" value="4">
+                <label class="form-check-label" for="actions4">Remove a group</label>
             </div>
             <button type="submit" class="btn btn-success">
                 Submit

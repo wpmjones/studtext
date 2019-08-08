@@ -45,6 +45,17 @@ class User(UserMixin):
         return user
 
     @staticmethod
+    def create(id_, name, email, profile_pic):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("INSERT INTO users (id, name, email, profile_pic) "
+                               "VALUES (%s, %s, %s, %s)",
+                               [id_, name, email, profile_pic])
+        cursor.close()
+        conn.close()
+        logger.info(f"User {name} successfully added to database.")
+
+    @staticmethod
     def get_unapproved():
         with get_db() as conn:
             with conn.cursor() as cursor:
@@ -59,21 +70,18 @@ class User(UserMixin):
         return users
 
     @staticmethod
-    def create(id_, name, email, profile_pic):
+    def approve(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("INSERT INTO users (id, name, email, profile_pic) "
-                               "VALUES (%s, %s, %s, %s)",
-                               [id_, name, email, profile_pic])
+                sql = "UPDATE users SET is_approved = 1 WHERE id = %s"
+                cursor.execute(sql, user_id)
         cursor.close()
         conn.close()
-        logger.info(f"User {name} successfully added to database.")
 
     @staticmethod
     def link_corps(id_, corps_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                logger.debug(cursor.mogrify("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_]))
                 cursor.execute("UPDATE users SET corps_id = %s WHERE id = %s", [corps_id, id_])
                 cursor.execute("SELECT name FROM corps WHERE id = %s", [corps_id])
                 corps_name = cursor.fetchone()[0]
@@ -107,15 +115,52 @@ class Recipients:
     @staticmethod
     def create(name, phone):
         # TODO send welcome message via Twilio
-        # TODO add html to add recipients
         with get_db() as conn:
             with conn.cursor() as cursor:
-                conn.execute("INSERT INTO recipients "
-                             "(name, phone) "
-                             "VALUES (%s, %s)", [name, phone])
+                cursor.execute("INSERT INTO recipients "
+                               "(name, phone) "
+                               "VALUES (%s, %s)", [name, phone])
+                new_id = cursor.fetchone()[0]
         cursor.close()
         conn.close()
         logger.info(f"Recipient {name} successfully added to database.")
+        return new_id
+
+    @staticmethod
+    def get(id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT name, phone "
+                               "FROM recipients "
+                               "WHERE id = $1",
+                               id)
+                recipient = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return recipient
+
+    @staticmethod
+    def update(id, name, phone):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("UPDATE recipients "
+                               "SET name = $1, phone = $2 "
+                               "WHERE id = $3",
+                               name, phone, id)
+        cursor.close()
+        conn.close()
+        logger.info(f"Recipient {name} updated.")
+
+    @staticmethod
+    def assign_groups(recipient_id, groups):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                for group_id in groups:
+                    cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
+                                   "VALUES (%s, %s)", recipient_id, group_id)
+        cursor.close()
+        conn.close()
+        logger.info(f"Added recipient {recipient_id} to group {group_id}")
 
     @staticmethod
     def get_groups(user_id):
@@ -130,7 +175,20 @@ class Recipients:
         return groups
 
     @staticmethod
-    def get_recipients(group):
+    def get_recipients(user_id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT r.id, r.name, r.phone FROM recipients r "
+                               "INNER JOIN users u on r.corps_id = u.corps_id "
+                               "WHERE u.id = %s", user_id)
+                recipients = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return recipients
+
+    @staticmethod
+    def get_recipients_by_group(group):
+        """This function pulls recipients for a specified group for sending messages"""
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = ("SELECT r.name, '+1' || r.phone as phone, r.id "

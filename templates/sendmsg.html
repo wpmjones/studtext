@@ -23,19 +23,22 @@
         <br />
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    {% if "Error" not in message[1]: %}
+                {% for category, message in messages %}
+                    {% if category == "Success": %}
                         <div class="alert alert-info">
-                            <strong>Success! </strong> {{ message[1] }}
+                            <strong>{{ category }}!</strong> {{ message[1] }}
                         </div>
-                    {% else %}
+                    {% else category == "Error": %}
                         <div class="alert alert-warning">
-                            {{ message[1] }}
+                            <strong>{{ category }}!</strong> {{ message[1] }}
                         </div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
-    <div class="container"><a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a></div>
+    <div class="container">
+        <a href="/menu"><button class="btn btn-success" role="button">Modify Groups/Recipients</button></a>
+        <a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a>
+    </div>
 {% endblock %}

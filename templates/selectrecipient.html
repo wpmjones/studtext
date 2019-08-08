@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Recipient Selection</h2></div>
+    <div class="container">
+        <form action="" method="post" role="form">
+            {{ form.csrf }}
+            <div class="form-group">
+                <label for="recipient">Corps:</label>
+                <select class="form-control" id="recipient" name="recipient">
+                    {% for recipient in recipients %}
+                        <option value="{{ recipient[0] }}">{{ recipient[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">
+                Submit
+            </button>
+        </form>
+        <br />
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "Error" not in message[1]: %}
+                        <div class="alert alert-info">
+                            <strong>Success! </strong> {{ message[1] }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            {{ message[1] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="container">
+        <a href="/logout"><button class="btn btn-outline-danger" role="button">Google Logout</button></a>
+    </div>
+{% endblock %}

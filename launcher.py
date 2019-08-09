@@ -30,7 +30,6 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
 
-# TODO Add favicon
 # TODO can you add a bookmark link?
 
 
@@ -65,7 +64,7 @@ class AddForm(FlaskForm):
     name = StringField('Username', validators=[validators.required()])
     phone = StringField('Phone', validators=[validators.required()])
 
-    def validate_phone(form, field):
+    def validate_phone(self, form, field):
         if len(field.data) > 16:
             raise ValidationError('Invalid phone number.')
         try:
@@ -292,6 +291,8 @@ def menu():
         if request.form["actions"] == 4:
             # TODO create fuction for remove_group
             redirect(url_for("remove_group"))
+        else:
+            flash("Please select an item from the list.", "Error")
     else:
         return render_template("menu.html",
                                form=form,

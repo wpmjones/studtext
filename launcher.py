@@ -289,10 +289,9 @@ def menu():
             # TODO create function for add_group
             redirect(url_for("add_group"))
         if request.form["actions"] == 4:
-            # TODO create fuction for remove_group
+            # TODO create function for remove_group
             redirect(url_for("remove_group"))
-        else:
-            flash("Please select an item from the list.", "Error")
+        flash("Please select an item from the list.", "Error")
     else:
         return render_template("menu.html",
                                form=form,

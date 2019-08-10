@@ -114,12 +114,12 @@ class User(UserMixin):
 class Recipients:
     @staticmethod
     def create(name, phone):
-        # TODO send welcome message via Twilio
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipients "
                                "(name, phone) "
                                "VALUES (%s, %s)", [name, phone])
+                # TODO Troubleshoot why fetch id isn't working
                 new_id = cursor.fetchone()[0]
         cursor.close()
         conn.close()

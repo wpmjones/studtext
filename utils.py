@@ -6,7 +6,6 @@ from db import Messages
 
 def discord_log(msg):
     record = msg.record
-    logger.debug(record['module'])
     payload = {
         "title": f"{record['module']}:{record['function']}:{record['line']}",
         "fields": [
@@ -16,7 +15,8 @@ def discord_log(msg):
             "text": record['time'].strftime("%Y-%m-%d %T.%f")
         }
     }
-    requests.post(settings["discord"]["webhook"], data=payload)
+    r = requests.post(settings["discord"]["webhook"], data=payload)
+    print(r.status_code)
     if record["exception"]:
         content = f"python\n{record['exception']}"
         send_text(settings["discord"]["webhook"], content, block=1)

@@ -34,11 +34,11 @@
                 {% for message in messages %}
                     {% if "Error" not in message[1]: %}
                         <div class="alert alert-info">
-                            <strong>Success! </strong> {{ message }}
+                            <strong>Success! </strong> {{ message[1] }}
                         </div>
                     {% else %}
                         <div class="alert alert-warning">
-                            {{ message }}
+                            {{ message[1] }}
                         </div>
                     {% endif %}
                 {% endfor %}

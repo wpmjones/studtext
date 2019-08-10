@@ -314,7 +314,7 @@ def add_recipient():
             except TwilioRestException:
                 valid_num = 0
             if not valid_num:
-                flash("Invalid phone number")
+                flash("Invalid phone number", "Error")
                 return render_template("addrecipient.html",
                                        form=form,
                                        profile_pic=current_user.profile_pic)

@@ -22,11 +22,9 @@ def discord_log(msg):
     }
     r = requests.post(settings["discord"]["webhook"], json=payload)
     if record["exception"]:
-        e_type = record["exception"]["type"]
-        e_value = record["exception"]["value"]
-        e_traceback = record["exception"]["traceback"]
-        content = f"{e_type}\n{e_value}\n{e_traceback}"
-        send_text(settings["discord"]["webhook"], content)
+        e_traceback = record["exception"].traceback
+        content = {"content": e_traceback}
+        send_text(settings["discord"]["webhook"], json=content)
 
 
 def send_text(webhook, text, block=None):

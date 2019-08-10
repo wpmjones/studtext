@@ -7,20 +7,21 @@ from db import Messages
 def discord_log(msg):
     record = msg.record
     logger.debug("Testing Debug")
+    logger.debug(record['level'])
     logger.debug(record['message'])
-    payload = {
-        "title": f"{record['module']}:{record['function']}:{record['line']}",
-        "fields": {
-            {"name": record['level'], "value": record['message'], "inline": False}
-        },
-        "footer": {
-            "text": record['time'].strftime("%Y-%m-%d %T.%f")
-        }
-    }
-    requests.post(settings["discord"]["webhook"], data=payload)
-    if record["exception"]:
-        content = f"python\n{record['exception']}"
-        send_text(settings["discord"]["webhook"], content, block=1)
+    # payload = {
+    #     "title": f"{record['module']}:{record['function']}:{record['line']}",
+    #     "fields": {
+    #         {"name": record['level'], "value": record['message'], "inline": False}
+    #     },
+    #     "footer": {
+    #         "text": record['time'].strftime("%Y-%m-%d %T.%f")
+    #     }
+    # }
+    # requests.post(settings["discord"]["webhook"], data=payload)
+    # if record["exception"]:
+    #     content = f"python\n{record['exception']}"
+    #     send_text(settings["discord"]["webhook"], content, block=1)
 
 
 def send_text(webhook, text, block=None):

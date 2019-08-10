@@ -118,8 +118,8 @@ class Recipients:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipients "
                                "(name, phone) "
-                               "VALUES (%s, %s)", [name, phone])
-                # TODO Troubleshoot why fetch id isn't working
+                               "VALUES (%s, %s) "
+                               "RETURNING id", [name, phone])
                 new_id = cursor.fetchone()[0]
         cursor.close()
         conn.close()

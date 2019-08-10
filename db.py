@@ -156,7 +156,7 @@ class Recipients:
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
-                               "VALUES (%s, %s)", recipient_id, group_id)
+                               "VALUES (%s, %s)", (recipient_id, group_id))
         cursor.close()
         conn.close()
 

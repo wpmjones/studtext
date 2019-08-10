@@ -66,12 +66,10 @@ class AddForm(FlaskForm):
 
     def validate_phone(form, field):
         if len(field.data) > 16:
-            logger.debug("Phone number is too long")
             raise ValidationError('Invalid phone number.')
         try:
             input_number = phonenumbers.parse(field.data)
             if not (phonenumbers.is_valid_number(input_number)):
-                logger.debug("Phone number is not valid.")
                 raise ValidationError('Invalid phone number.')
         except:
             input_number = phonenumbers.parse("+1"+field.data)
@@ -305,6 +303,10 @@ def menu():
 def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
     form = AddForm(request.form)
+    if request.method == "POST":
+        logger.debug("POST")
+    if form.validate():
+        logger.debug("Validated")
     logger.debug("Pre-if")
     if request.method == "POST" and form.validate():
         logger.debug("Post-if")

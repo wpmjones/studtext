@@ -307,10 +307,10 @@ def add_recipient():
         if request.form["phone"] and request.form["name"]:
             logger.debug("Inside if phone/name")
             try:
-                number_info = client.lookups.phone_numbers(request.form["phone"]).fetch()
+                number_info = twilio.lookups.phone_numbers(request.form["phone"]).fetch()
                 logger.info(number_info)
                 valid_num = 1
-            except client.TwilioRestException:
+            except twilio.TwilioRestException:
                 valid_num = 0
                 logger.info(number_info)
             if not valid_num:

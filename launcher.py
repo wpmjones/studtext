@@ -283,15 +283,16 @@ def menu():
     if request.method == "POST":
         logger.debug(request.form["actions"])
         if request.form["actions"] == 1:
+            logger.debug("Arrived at one")
             return redirect(url_for("add_recipient"))
         if request.form["actions"] == 2:
             return redirect(url_for("select_recipient"))
         if request.form["actions"] == 3:
             # TODO create function for add_group
-            return redirect(url_for("add_group"))
+            return redirect(url_for("add_recipient"))
         if request.form["actions"] == 4:
             # TODO create function for remove_group
-            return redirect(url_for("remove_group"))
+            return redirect(url_for("add_recipient"))
         flash("Please select an item from the list.", "Error")
     else:
         return render_template("menu.html",

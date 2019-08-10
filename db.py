@@ -2,7 +2,6 @@ import psycopg2
 from loguru import logger
 from flask_login import UserMixin
 from config import settings
-from typing import List
 
 
 def get_db():
@@ -153,15 +152,13 @@ class Recipients:
         logger.info(f"Recipient {name} updated.")
 
     @staticmethod
-    def assign_groups(recipient_id, groups: List[str]):
+    def assign_groups(recipient_id, group_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                for group_id in groups:
-                    cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
-                                   "VALUES (%s, %s)", recipient_id, group_id)
+                cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
+                               "VALUES (%s, %s)", recipient_id, group_id)
         cursor.close()
         conn.close()
-        logger.info(f"Added recipient {recipient_id} to group {group_id}")
 
     @staticmethod
     def get_groups(user_id):

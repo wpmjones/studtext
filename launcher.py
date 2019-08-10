@@ -1,8 +1,8 @@
 import requests
 import json
-import phonenumbers
 from loguru import logger
 from db import User, Recipients, Messages
+from utils import welcome_message, discord_log
 from flask import Flask, redirect, url_for, request, render_template, flash, session
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -30,6 +30,9 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 
 # OAuth2 client setup
 client = WebApplicationClient(google_client_id)
+
+# Send logs to discord
+logger.add(discord_log, level="DEBUG")
 
 # TODO can you add a bookmark link?
 
@@ -363,7 +366,9 @@ def manage_recipient():
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
-        Recipients.assign_groups(session["recipient_id"], form.groups.data)
+        for group_id in form.groups.data:
+            Recipients.assign_groups(session["recipient_id"], group_id)
+        logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)
         session.pop("new_name", None)
@@ -387,12 +392,3 @@ def app_help():
 @app.route("/contact")
 def contact_us():
     return render_template("contactus.html")
-
-
-def welcome_message(recipient_id, name, phone):
-    body = (f"Welcome {name}! You've been added to a group for Salvation Army text messages. "
-           f"If you have questions, talk to your corps officers. Text 'STOP' to cancel messages.")
-    twilio_msg = twilio.messages.create(to=phone,
-                                        from_=settings["twilio"]["phone_num"],
-                                        body=body)
-    Messages.add_message(twilio_msg.sid, "WELCOME", recipient_id, 0, body)

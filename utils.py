@@ -7,18 +7,13 @@ from db import Messages
 def discord_log(msg):
     record = msg.record
     payload = {
-        "title": "Fred Title",
-        "fields": [{"name": "Level", "value": "Message", "inline": False}],
-        "footer": {"text": "DateTime"}
+        "embeds": [{
+            "title": f"{record['module']}:{record['function']}:{record['line']}",
+            "fields": [{"name": record['level'], "value": record['message'], "inline": False}],
+            "footer": {"text": record['time'].strftime("%Y-%m-%d %T.%f")}
+        }]
     }
     r = requests.post(settings["discord"]["webhook"], json=payload)
-    payload = {
-        "title": f"{record['module']}:{record['function']}:{record['line']}",
-        "fields": [{"name": record['level'], "value": record['message'], "inline": False}],
-        "footer": {"text": record['time'].strftime("%Y-%m-%d %T.%f")}
-    }
-    r = requests.post(settings["discord"]["webhook"], json=payload)
-    print(r.status_code)
     if record["exception"]:
         content = f"python\n{record['exception']}"
         send_text(settings["discord"]["webhook"], content, block=1)
@@ -28,24 +23,30 @@ def send_text(webhook, text, block=None):
     """ Sends text ot channel, splitting if necessary """
     if len(text) < 1993:
         if block:
-            requests.post(webhook, f"```{text}```")
+            payload = {"content": f"```{text}```"}
+            requests.post(webhook, json=payload)
         else:
-            requests.post(webhook, text)
+            payload = {"content": text}
+            requests.post(webhook, json=payload)
     else:
         coll = ""
         for line in text.splitlines(keepends=True):
             if len(coll) + len(line) > 1993:
                 # if collecting is going to be too long, send  what you have so far
                 if block:
-                    requests.post(webhook, f"```{coll}```")
+                    payload = {"content": f"```{coll}```"}
+                    requests.post(webhook, json=payload)
                 else:
-                    requests.post(webhook, coll)
+                    payload = {"content": coll}
+                    requests.post(webhook, json=payload)
                 coll = ""
             coll += line
         if block:
-            requests.post(webhook, f"```{coll}```")
+            payload = {"content": f"```{coll}```"}
+            requests.post(webhook, json=payload)
         else:
-            requests.post(webhook, coll)
+            payload = {"content": coll}
+            requests.post(webhook, json=payload)
 
 
 def welcome_message(twilio, recipient_id, name, phone):

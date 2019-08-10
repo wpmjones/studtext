@@ -331,10 +331,10 @@ def add_recipient():
 def remove_recipient():
     """This page allows a user to remove a recipient from their corps"""
     # TODO Finish this function
+    form = SingleSelectForm(request.form)
     if request.method == "POST":
         pass
     else:
-        form = SingleSelectForm()
         form.select.choices = Recipients.get_recipients(current_user.id)
 
 
@@ -342,12 +342,12 @@ def remove_recipient():
 @login_required
 def select_recipient():
     """This page allows the user to select a recipient for modification"""
+    form = SingleSelectForm(request.form)
     if request.method == "POST":
         session["recipient_id"] = request.form["recipient"]
         # TODO get groups from db and add to session before redirect
         return redirect(url_for("manage_recipient"))
     else:
-        form = SingleSelectForm()
         form.select.choices = Recipients.get_recipients(current_user.id)
         return render_template("selectrecipient.html",
                                form=form,
@@ -363,9 +363,7 @@ def manage_recipient():
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
-        logger.debug(form.groups.data)
-        logger.debug(form.phone)
-        Recipients.assign_groups(session["recipient_id"], request.form["groups"])
+        Recipients.assign_groups(session["recipient_id"], form.groups.data)
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)
         session.pop("new_name", None)

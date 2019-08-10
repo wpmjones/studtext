@@ -26,15 +26,15 @@
                 {% for category, message in messages %}
                     {% if category == "Success": %}
                         <div class="alert alert-info">
-                            <strong>{{ category }}!</strong> {{ message[1] }}
+                            <strong>{{ category }}!</strong> {{ message }}
                         </div>
                     {% elif category == "Error": %}
                         <div class="alert alert-warning">
-                            <strong>{{ category }}!</strong> {{ message[1] }}
+                            <strong>{{ category }}!</strong> {{ message }}
                         </div>
                     {% else %}
                         <div class="alert alert-info">
-                            {{ message[1] }}
+                            {{ message }}
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -42,6 +42,6 @@
         {% endwith %}
     </div>
     <div class="container">
-        <a href="/menu" class="btn btn-success" role="button">Modify Groups/Recipients</a>
+        <a href="/menu" class="btn btn-outline-success" role="button">Modify Groups/Recipients</a>
     </div>
 {% endblock %}

@@ -15,6 +15,13 @@
             </button>
         </form>
         <br />
+        {% if field.errors %}
+            <div class="alert alert-warning">
+                {% for error in field.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for message in messages %}

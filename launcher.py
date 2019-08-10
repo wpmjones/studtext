@@ -40,7 +40,7 @@ def get_google_provider_cfg():
 
 class MessageForm(FlaskForm):
     group = SelectField("Recipients:", coerce=int)
-    msg = TextAreaField("Message:", validators=[validators.required()])
+    msg = TextAreaField("Message:", validators=[validators.DataRequired()])
 
 
 class MenuForm(FlaskForm):
@@ -61,8 +61,8 @@ class SingleSelectForm(FlaskForm):
 
 
 class AddForm(FlaskForm):
-    name = StringField('Username', validators=[validators.required()])
-    phone = StringField('Phone', validators=[validators.required()])
+    name = StringField('Username', validators=[validators.DataRequired()])
+    phone = StringField('Phone', validators=[validators.DataRequired()])
 
     def validate_phone(form, field):
         if len(field.data) > 16:

@@ -318,6 +318,7 @@ def add_recipient():
                                        form=form,
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
+            logger.debug("test message")
             # session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
             # welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
             return redirect(url_for("manage_recipient"))

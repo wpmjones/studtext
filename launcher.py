@@ -316,7 +316,7 @@ def add_recipient():
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
-            welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
+            # welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
             return redirect(url_for("manage_recipient"))
         else:
             flash("All form fields are required.", "Error")
@@ -376,7 +376,7 @@ def manage_recipient():
                                groups=form.groups.choices,
                                profile_pic=current_user.profile_pic,
                                recipient=session["new_name"],
-                               phone=session["phone"])
+                               phone=session["new_phone"])
 
 
 @app.route("/help")

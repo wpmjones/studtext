@@ -7,8 +7,9 @@ from db import Messages
 def discord_log(msg):
     record = msg.record
     logger.debug("Testing Debug")
-    logger.debug(record.level)
-    logger.debug(record.message)
+    level = record['level']
+    message = record['message']
+    field1 = {"name": level, "value": message, "inline": False}
     # payload = {
     #     "title": f"{record['module']}:{record['function']}:{record['line']}",
     #     "fields": {

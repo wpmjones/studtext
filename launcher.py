@@ -64,17 +64,17 @@ class AddForm(FlaskForm):
     name = StringField('Username', validators=[validators.DataRequired()])
     phone = StringField('Phone', validators=[validators.DataRequired()])
 
-    def validate_phone(form, field):
-        if len(field.data) > 16:
-            raise ValidationError('Invalid phone number.')
-        try:
-            input_number = phonenumbers.parse(field.data)
-            if not (phonenumbers.is_valid_number(input_number)):
-                raise ValidationError('Invalid phone number.')
-        except:
-            input_number = phonenumbers.parse("+1"+field.data)
-            if not (phonenumbers.is_valid_number(input_number)):
-                raise ValidationError('Invalid phone number.')
+    # def validate_phone(form, field):
+    #     if len(field.data) > 16:
+    #         raise ValidationError('Invalid phone number.')
+    #     try:
+    #         input_number = phonenumbers.parse(field.data)
+    #         if not (phonenumbers.is_valid_number(input_number)):
+    #             raise ValidationError('Invalid phone number.')
+    #     except:
+    #         input_number = phonenumbers.parse("+1"+field.data)
+    #         if not (phonenumbers.is_valid_number(input_number)):
+    #             raise ValidationError('Invalid phone number.')
 
 
 class GroupForm(FlaskForm):
@@ -304,14 +304,18 @@ def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
     form = AddForm(request.form)
     if request.method == "POST":
-        logger.debug("POST")
-    if form.validate():
-        logger.debug("Validated")
-    logger.debug("Pre-if")
-    if request.method == "POST" and form.validate():
-        logger.debug("Post-if")
         if request.form["phone"] and request.form["name"]:
             logger.debug("Inside if phone/name")
+            try:
+                number_info = client.lookups.phone_numbers(request.form["phone"]).fetch()
+                logger.info(number_info)
+                valid_num = 1
+            except client.TwilioRestException:
+                valid_num = 0
+                logger.info(number_info)
+            if not valid_num:
+                flash("Invalid phone number")
+                return
             session["new_name"] = request.form["name"]
             session["new_phone"] = request.form["phone"]
             session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])

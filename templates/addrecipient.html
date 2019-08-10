@@ -15,6 +15,13 @@
             </button>
         </form>
         <br />
+        {% if form.name.errors %}
+            <div class="alert alert-warning">
+                {% for error in form.name.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
         {% if form.phone.errors %}
             <div class="alert alert-warning">
                 {% for error in form.phone.errors %}

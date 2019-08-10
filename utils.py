@@ -4,10 +4,10 @@ from config import settings
 from db import Messages
 
 
-def discord_log(message):
-    record = message.record
-    logger.debug(record)
-    logger.debug(type(record['message']))
+def discord_log(msg):
+    record = msg.record
+    logger.debug("Testing Debug")
+    logger.debug(record['message'])
     payload = {
         "title": f"{record['module']}:{record['function']}:{record['line']}",
         "fields": {

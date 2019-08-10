@@ -4,13 +4,14 @@ from db import Messages
 
 
 def discord_log(message):
+    print(message.record)
     payload = {
-        "title": f"{message.record['name']}:{message.record['module']}:{message.record['line']}",
+        "title": f"{message.record['module']}:{message.record['function']}:{message.record['line']}",
         "fields": {
-            {"name": message.record["level"], "value": message.record["message"], "inline": False}
+            {"name": message.record['level'], "value": message.record['message'], "inline": False}
         },
         "footer": {
-            "text": message.record["time"]
+            "text": message.record['time'].strftime("%Y-%m-%d %T.%f")
         }
     }
     requests.post(settings["discord"]["webhook"], data=payload)

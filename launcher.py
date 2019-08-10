@@ -281,17 +281,16 @@ def menu():
     """This page is designed to let the user select additional actions"""
     form = MenuForm(request.form)
     if request.method == "POST":
-        logger.debug(request.form)
         if request.form["actions"] == 1:
-            redirect(url_for("add_recipient"))
+            return redirect(url_for("add_recipient"))
         if request.form["actions"] == 2:
-            redirect(url_for("select_recipient"))
+            return redirect(url_for("select_recipient"))
         if request.form["actions"] == 3:
             # TODO create function for add_group
-            redirect(url_for("add_group"))
+            return redirect(url_for("add_group"))
         if request.form["actions"] == 4:
             # TODO create function for remove_group
-            redirect(url_for("remove_group"))
+            return redirect(url_for("remove_group"))
         flash("Please select an item from the list.", "Error")
     else:
         return render_template("menu.html",
@@ -305,7 +304,6 @@ def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
     form = AddForm(request.form)
     if request.method == "POST" and form.validate():
-        logger.debug(request.form)
         if "phone" in request.form:
             if request.form["phone"] and request.form["name"]:
                 session["new_name"] = request.form["name"]

@@ -308,7 +308,6 @@ def add_recipient():
         if request.form["phone"] and request.form["name"]:
             try:
                 number_info = twilio.lookups.phone_numbers(request.form["phone"]).fetch()
-                logger.info(f"{number_info.carrier.name}: {number_info.carrier.type}")
                 session["new_phone"] = number_info.phone_number[2:]
             except TwilioRestException:
                 flash("Invalid phone number", "Error")

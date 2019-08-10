@@ -362,6 +362,7 @@ def manage_recipient():
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
+        logger.debug(request.form["groups"])
         Recipients.assign_groups(session["recipient_id"], request.form["groups"])
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)

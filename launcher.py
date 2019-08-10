@@ -180,9 +180,8 @@ def protect():
 def send_msg():
     """Main page used for sending messages to groups"""
     # TODO set up a way to handle responses
-    # TODO set up initial message to new recipient (if recipient id not in messages database)
     if current_user.is_approved:
-        form = MessageForm()
+        form = MessageForm(request.form)
         form.group.choices = Recipients.get_groups(current_user.id)
         if request.method == "POST":
             group = request.form["group"]
@@ -201,6 +200,7 @@ def send_msg():
             else:
                 flash("All form fields are required.", "Error")
         if "alert" in session:
+            logger.debug(f"In send_msg {session['alert']}")
             flash(session["alert"])
             session.pop("alert", None)
         return render_template("sendmsg.html",
@@ -373,6 +373,7 @@ def manage_recipient():
                 logger.exception("Failure on assign_groups")
         logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
+        logger.debug(session["alert"])
         session.pop("recipient_id", None)
         session.pop("new_name", None)
         session.pop("new_phone", None)

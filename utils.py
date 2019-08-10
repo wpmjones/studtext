@@ -15,7 +15,7 @@ def discord_log(msg):
             "text": record['time'].strftime("%Y-%m-%d %T.%f")
         }
     }
-    r = requests.post(settings["discord"]["webhook"], data=payload)
+    r = requests.post(settings["discord"]["webhook"], json=payload)
     print(r.status_code)
     if record["exception"]:
         content = f"python\n{record['exception']}"

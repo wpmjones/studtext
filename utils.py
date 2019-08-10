@@ -6,8 +6,15 @@ from db import Messages
 
 def discord_log(msg):
     record = msg.record
+    if record["exception"] or record['level'] in ("CRITICAL", "ERROR", "WARNING"):
+        color = int.from_bytes([200, 0, 0], byteorder='big')
+    elif record['level'] == "DEBUG":
+        color = int.from_bytes([255, 255, 0], byteorder='big')
+    else:
+        color = int.from_bytes([0, 225, 0], byteorder='big')
     payload = {
         "embeds": [{
+            "color": color,
             "title": f"{record['module']}:{record['function']}:{record['line']}",
             "fields": [{"name": record['level'], "value": record['message'], "inline": False}],
             "footer": {"text": record['time'].strftime("%Y-%m-%d %T.%f")}

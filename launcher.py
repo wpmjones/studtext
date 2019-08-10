@@ -318,8 +318,7 @@ def add_recipient():
                                        form=form,
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
-            logger.debug("test message")
-            # session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
+            session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
             # welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
             return redirect(url_for("manage_recipient"))
         else:
@@ -369,8 +368,10 @@ def manage_recipient():
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
         logger.debug(f"Recipient ID: {session['recipient_id']}")
         for group_id in form.groups.data:
-            print(session["recipient_id"], group_id)
-            Recipients.assign_groups(session["recipient_id"], group_id)
+            try:
+                Recipients.assign_groups(session["recipient_id"], group_id)
+            except:
+                logger.exception("Failure on assign_groups")
         logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)

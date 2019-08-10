@@ -7,13 +7,15 @@ from db import Messages
 def discord_log(msg):
     record = msg.record
     payload = {
+        "title": "Fred Title",
+        "fields": [{"name": "Level", "value": "Message", "inline": False}],
+        "footer": {"text": "DateTime"}
+    }
+    r = requests.post(settings["discord"]["webhook"], json=payload)
+    payload = {
         "title": f"{record['module']}:{record['function']}:{record['line']}",
-        "fields": [
-            {"name": record['level'], "value": record['message'], "inline": False}
-        ],
-        "footer": {
-            "text": record['time'].strftime("%Y-%m-%d %T.%f")
-        }
+        "fields": [{"name": record['level'], "value": record['message'], "inline": False}],
+        "footer": {"text": record['time'].strftime("%Y-%m-%d %T.%f")}
     }
     r = requests.post(settings["discord"]["webhook"], json=payload)
     print(r.status_code)

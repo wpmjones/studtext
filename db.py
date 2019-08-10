@@ -117,9 +117,6 @@ class Recipients:
         # TODO send welcome message via Twilio
         with get_db() as conn:
             with conn.cursor() as cursor:
-                logger.debug(cursor.mogrify("INSERT INTO recipients "
-                                            "(name, phone) "
-                                            "VALUES (%s, %s)", [name, phone]))
                 cursor.execute("INSERT INTO recipients "
                                "(name, phone) "
                                "VALUES (%s, %s)", [name, phone])

@@ -310,17 +310,14 @@ def add_recipient():
                 number_info = twilio.lookups.phone_numbers(request.form["phone"]).fetch()
                 logger.info(number_info.phone_number[2:])
                 session["new_phone"] = number_info.phone_number[2:]
-                valid_num = 1
             except TwilioRestException:
-                valid_num = 0
-            if not valid_num:
                 flash("Invalid phone number", "Error")
                 return render_template("addrecipient.html",
                                        form=form,
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
-            session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])
-            welcome_message(session["recipient_id"], request.form["name"], request.form["phone"])
+            session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
+            welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
             return redirect(url_for("manage_recipient"))
         else:
             flash("All form fields are required.", "Error")
@@ -392,10 +389,11 @@ def app_help():
 def contact_us():
     return render_template("contactus.html")
 
+
 def welcome_message(recipient_id, name, phone):
     body = (f"Welcome {name}! You've been added to a group for Salvation Army text messages. "
            f"If you have questions, talk to your corps officers. Text 'STOP' to cancel messages.")
-    twilio_msg = twilio.messages.create(to="+1" + phone,
+    twilio_msg = twilio.messages.create(to=phone,
                                         from_=settings["twilio"]["phone_num"],
                                         body=body)
     Messages.add_message(twilio_msg.sid, "WELCOME", recipient_id, 0, body)

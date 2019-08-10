@@ -359,10 +359,12 @@ def select_recipient():
 @login_required
 def manage_recipient():
     """This page allows the user to modify the selected recipient (name, phone, and groups)."""
+    form = GroupForm(request.form)
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
-        logger.debug(request.form["groups"])
+        logger.debug(form.groups.data)
+        logger.debug(form.phone)
         Recipients.assign_groups(session["recipient_id"], request.form["groups"])
         session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)
@@ -370,7 +372,6 @@ def manage_recipient():
         session.pop("new_phone", None)
         return redirect(url_for("send_msg"))
     else:
-        form = GroupForm()
         form.groups.choices = Recipients.get_groups(current_user.id)
         return render_template("managerecipient.html",
                                form=form,

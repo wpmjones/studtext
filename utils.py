@@ -1,15 +1,16 @@
 import requests
+from loguru import logger
 from config import settings
 from db import Messages
 
 
 def discord_log(message):
     record = message.record
-    print(record)
-    print(record['message'])
-    type(record)
-    type(message)
-    type(record['message'])
+    logger.debug(record)
+    logger.debug(record['message'])
+    logger.debug(type(record))
+    logger.debug(type(message))
+    logger.debug(type(record['message']))
     payload = {
         "title": f"{record['module']}:{record['function']}:{record['line']}",
         "fields": {

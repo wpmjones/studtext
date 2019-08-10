@@ -2,6 +2,7 @@ import psycopg2
 from loguru import logger
 from flask_login import UserMixin
 from config import settings
+from typing import List
 
 
 def get_db():
@@ -152,7 +153,7 @@ class Recipients:
         logger.info(f"Recipient {name} updated.")
 
     @staticmethod
-    def assign_groups(recipient_id, groups):
+    def assign_groups(recipient_id, groups: List[str]):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 for group_id in groups:

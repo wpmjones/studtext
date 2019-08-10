@@ -281,6 +281,7 @@ def menu():
     """This page is designed to let the user select additional actions"""
     form = MenuForm(request.form)
     if request.method == "POST":
+        logger.debug(request.form["actions"])
         if request.form["actions"] == 1:
             return redirect(url_for("add_recipient"))
         if request.form["actions"] == 2:

@@ -7,8 +7,11 @@ from db import Messages
 def discord_log(msg):
     record = msg.record
     logger.debug("Testing Debug")
-    level = record['level']
-    message = record['message']
+    try:
+        level = record['level']
+        message = record['message']
+    except Exception as e:
+        print(e)
     field1 = {"name": level, "value": message, "inline": False}
     # payload = {
     #     "title": f"{record['module']}:{record['function']}:{record['line']}",

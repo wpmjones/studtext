@@ -281,7 +281,6 @@ def menu():
     """This page is designed to let the user select additional actions"""
     form = MenuForm(request.form)
     if request.method == "POST":
-        logger.debug(request.form["actions"])
         if request.form["actions"] == "1":
             return redirect(url_for("add_recipient"))
         if request.form["actions"] == "2":
@@ -304,16 +303,18 @@ def menu():
 def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
     form = AddForm(request.form)
+    logger.debug("Pre-if")
     if request.method == "POST" and form.validate():
-        if "phone" in request.form:
-            if request.form["phone"] and request.form["name"]:
-                session["new_name"] = request.form["name"]
-                session["new_phone"] = request.form["phone"]
-                session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])
-                welcome_message(session["recipient_id"], request.form["name"], request.form["phone"])
-                return redirect(url_for("manage_recipient"))
-            else:
-                flash("All form fields are required.", "Error")
+        logger.debug("Post-if")
+        if request.form["phone"] and request.form["name"]:
+            logger.debug("Inside if phone/name")
+            session["new_name"] = request.form["name"]
+            session["new_phone"] = request.form["phone"]
+            session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])
+            welcome_message(session["recipient_id"], request.form["name"], request.form["phone"])
+            return redirect(url_for("manage_recipient"))
+        else:
+            flash("All form fields are required.", "Error")
     else:
         return render_template("addrecipient.html",
                                form=form,

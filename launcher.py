@@ -201,7 +201,7 @@ def send_msg():
             else:
                 flash("All form fields are required.", "Error")
         if "alert" in session:
-            flash(session["alert"][0], session["alert"][1])
+            flash(session["alert"])
             session.pop("alert", None)
         return render_template("sendmsg.html",
                                form=form,
@@ -372,7 +372,7 @@ def manage_recipient():
             except:
                 logger.exception("Failure on assign_groups")
         logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")
-        session["alert"] = ("Success", f"{session['new_name']} is now attached to the selected groups.")
+        session["alert"] = f"{session['new_name']} is now attached to the selected groups."
         session.pop("recipient_id", None)
         session.pop("new_name", None)
         session.pop("new_phone", None)

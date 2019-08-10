@@ -9,6 +9,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, SelectMultipleField, validators, ValidationError
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
 from config import settings
 
 app = Flask(__name__)
@@ -305,19 +306,18 @@ def add_recipient():
     form = AddForm(request.form)
     if request.method == "POST":
         if request.form["phone"] and request.form["name"]:
-            logger.debug("Inside if phone/name")
             try:
                 number_info = twilio.lookups.phone_numbers(request.form["phone"]).fetch()
-                logger.info(number_info)
+                logger.info(number_info.carrier)
+                session["new_phone"] = number_info.phone_number[2:]
                 valid_num = 1
-            except twilio.TwilioRestException:
+            except TwilioRestException:
                 valid_num = 0
                 logger.info(number_info)
             if not valid_num:
                 flash("Invalid phone number")
                 return
             session["new_name"] = request.form["name"]
-            session["new_phone"] = request.form["phone"]
             session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])
             welcome_message(session["recipient_id"], request.form["name"], request.form["phone"])
             return redirect(url_for("manage_recipient"))

@@ -4,19 +4,24 @@ from db import Messages
 
 
 def discord_log(message):
-    print(message.record)
+    record = message.record
+    print(record)
+    print(record['message'])
+    type(record)
+    type(message)
+    type(record['message'])
     payload = {
-        "title": f"{message.record['module']}:{message.record['function']}:{message.record['line']}",
+        "title": f"{record['module']}:{record['function']}:{record['line']}",
         "fields": {
-            {"name": message.record['level'], "value": message.record['message'], "inline": False}
+            {"name": record['level'], "value": record['message'], "inline": False}
         },
         "footer": {
-            "text": message.record['time'].strftime("%Y-%m-%d %T.%f")
+            "text": record['time'].strftime("%Y-%m-%d %T.%f")
         }
     }
     requests.post(settings["discord"]["webhook"], data=payload)
-    if message.record["exception"]:
-        content = f"python\n{message.record['exception']}"
+    if record["exception"]:
+        content = f"python\n{record['exception']}"
         send_text(settings["discord"]["webhook"], content, block=1)
 
 

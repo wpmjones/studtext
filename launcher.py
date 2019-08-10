@@ -281,6 +281,7 @@ def menu():
     """This page is designed to let the user select additional actions"""
     form = MenuForm(request.form)
     if request.method == "POST":
+        logger.debug(request.form)
         if request.form["actions"] == 1:
             redirect(url_for("add_recipient"))
         if request.form["actions"] == 2:
@@ -304,6 +305,7 @@ def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
     form = AddForm(request.form)
     if request.method == "POST" and form.validate():
+        logger.debug(request.form)
         if "phone" in request.form:
             if request.form["phone"] and request.form["name"]:
                 session["new_name"] = request.form["name"]

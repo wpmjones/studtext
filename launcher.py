@@ -285,6 +285,9 @@ def menu():
         if request.form["actions"] == 1:
             logger.debug("Arrived at one")
             return redirect(url_for("add_recipient"))
+        if request.form["actions"] == "1":
+            logger.debug("Arrived at string one")
+            return redirect(url_for("add_recipient"))
         if request.form["actions"] == 2:
             return redirect(url_for("select_recipient"))
         if request.form["actions"] == 3:

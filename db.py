@@ -133,7 +133,7 @@ class Recipients:
                 cursor.execute("SELECT name, phone "
                                "FROM recipients "
                                "WHERE id = $1",
-                               id)
+                               str(id))
                 recipient = cursor.fetchone()
         cursor.close()
         conn.close()

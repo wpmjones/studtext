@@ -313,7 +313,6 @@ def add_recipient():
                 valid_num = 1
             except TwilioRestException:
                 valid_num = 0
-                logger.info(number_info)
             if not valid_num:
                 flash("Invalid phone number")
                 return

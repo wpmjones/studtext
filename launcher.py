@@ -64,12 +64,14 @@ class AddForm(FlaskForm):
     name = StringField('Username', validators=[validators.required()])
     phone = StringField('Phone', validators=[validators.required()])
 
-    def validate_phone(self, field):
+    def validate_phone(form, field):
         if len(field.data) > 16:
+            logger.debug("Phone number is too long")
             raise ValidationError('Invalid phone number.')
         try:
             input_number = phonenumbers.parse(field.data)
             if not (phonenumbers.is_valid_number(input_number)):
+                logger.debug("Phone number is not valid.")
                 raise ValidationError('Invalid phone number.')
         except:
             input_number = phonenumbers.parse("+1"+field.data)

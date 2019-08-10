@@ -5,12 +5,11 @@ from db import Messages
 
 def discord_log(msg):
     record = msg.record
-    print(record['module'])
     payload = {
         "title": f"{record['module']}:{record['function']}:{record['line']}",
-        "fields": {
+        "fields": [
             {"name": record['level'], "value": record['message'], "inline": False}
-        },
+        ],
         "footer": {
             "text": record['time'].strftime("%Y-%m-%d %T.%f")
         }

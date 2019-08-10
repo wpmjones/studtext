@@ -9,7 +9,7 @@ def discord_log(msg):
     logger.debug("Testing Debug")
     try:
         level = record.level
-        message = record['message']
+        message = record.message
     except Exception as e:
         print(e)
     field1 = {"name": level, "value": message, "inline": False}

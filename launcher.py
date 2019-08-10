@@ -315,7 +315,9 @@ def add_recipient():
                 valid_num = 0
             if not valid_num:
                 flash("Invalid phone number")
-                return
+                return render_template("addrecipient.html",
+                                       form=form,
+                                       profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], request.form["phone"])
             welcome_message(session["recipient_id"], request.form["name"], request.form["phone"])

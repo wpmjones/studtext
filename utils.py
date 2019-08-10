@@ -8,7 +8,7 @@ def discord_log(msg):
     record = msg.record
     logger.debug("Testing Debug")
     try:
-        level = record['level']
+        level = record.level
         message = record['message']
     except Exception as e:
         print(e)

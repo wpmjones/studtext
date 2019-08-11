@@ -242,14 +242,17 @@ def approve():
 def approve_user():
     """This is an admin only page where the user is actually approved"""
     if current_user.is_admin:
-        # Approve this user in the database
-        logger.debug(request.args.get["uid"])
-        User.approve(request.args.get["uid"])
-        # Check if there are more unapproved users
-        if len(User.get_unapproved()) > 0:
-            return redirect(url_for("approve"))
+        if request.method == "GET":
+            # Approve this user in the database
+            logger.debug(request.args.get("uid"))
+            User.approve(request.args.get("uid"))
+            # Check if there are more unapproved users
+            if len(User.get_unapproved()) > 0:
+                return redirect(url_for("approve"))
+            else:
+                return redirect(url_for("send_msg"))
         else:
-            return redirect(url_for("send_msg"))
+            return redirect(url_for("approve"))
     else:
         return redirect(url_for("send_msg"))
 

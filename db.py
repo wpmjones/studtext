@@ -145,8 +145,8 @@ class Recipients:
                                "WHERE id = %s",
                                [id_])
                 recipient = cursor.fetchone()
-                name = recipient["name"]
-                phone = recipient["phone"]
+                name = recipient[0]
+                phone = recipient[1]
                 cursor.execute("SELECT group_ID "
                                "FROM recipient_groups "
                                "WHERE recipient_id = %s", [id_])

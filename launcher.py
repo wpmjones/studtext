@@ -344,12 +344,11 @@ def remove_recipient():
 @login_required
 def select_recipient():
     """This page allows the user to select a recipient for modification"""
-    logger.debug("Inside select")
     form = SingleSelectForm(request.form)
     if request.method == "POST":
         logger.debug(form.select)
         logger.debug(request.form["recipient"])
-        selected_recipient = Recipients.get(request.form["recipient"])
+        selected_recipient = Recipients.get(int(request.form["recipient"]))
         session["new_name"] = selected_recipient["name"]
         session["phone"] = selected_recipient["phone"]
         session["groups"] = selected_recipient["groups"]

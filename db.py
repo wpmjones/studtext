@@ -138,14 +138,14 @@ class Recipients:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT name, phone "
                                "FROM recipients "
-                               "WHERE id = $1",
-                               id_)
+                               "WHERE id = %s",
+                               [id_])
                 recipient = cursor.fetchone()
                 name = recipient["name"]
                 phone = recipient["phone"]
                 cursor.execute("SELECT group_ID "
                                "FROM recipient_groups "
-                               "WHERE recipient_id = $1", id_)
+                               "WHERE recipient_id = %s", [id_])
                 fetch = cursor.fetchall()
                 groups = []
                 for row in fetch:
@@ -165,9 +165,9 @@ class Recipients:
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("UPDATE recipients "
-                               "SET name = $1, phone = $2 "
-                               "WHERE id = $3",
-                               name, phone, id)
+                               "SET name = %s, phone = %s "
+                               "WHERE id = %s",
+                               [name, phone, id])
         cursor.close()
         conn.close()
         logger.info(f"Recipient {name} updated.")
@@ -177,7 +177,7 @@ class Recipients:
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
-                               "VALUES (%s, %s)", (recipient_id, group_id))
+                               "VALUES (%s, %s)", [recipient_id, group_id])
         cursor.close()
         conn.close()
 

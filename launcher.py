@@ -354,6 +354,7 @@ def remove_group():
     if request.method == "POST":
         Recipients.remove_group(form.select.data)
         flash(f"{form.select.data} removed from the database")
+        logger.debug(form.select.name)
         return redirect(url_for("send_msg"))
     else:
         form.select.choices = Recipients.get_groups_by_user(current_user.corps_id)

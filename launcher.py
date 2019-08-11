@@ -350,7 +350,7 @@ def select_recipient():
         logger.debug(request.form["recipient"])
         selected_recipient = Recipients.get(int(request.form["recipient"]))
         session["new_name"] = selected_recipient.name
-        session["phone"] = selected_recipient.phone
+        session["new_phone"] = selected_recipient.phone
         session["groups"] = selected_recipient.groups
         return redirect(url_for("manage_recipient"))
     else:

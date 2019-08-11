@@ -1,5 +1,4 @@
 import requests
-from loguru import logger
 from config import settings
 from db import Messages
 
@@ -20,11 +19,10 @@ def discord_log(msg):
             "footer": {"text": record['time'].strftime("%Y-%m-%d %T.%f")}
         }]
     }
-    r = requests.post(settings["discord"]["webhook"], json=payload)
+    requests.post(settings["discord"]["webhook"], json=payload)
     if record["exception"]:
         e_traceback = record["exception"].traceback
-        content = {"content": e_traceback}
-        send_text(settings["discord"]["webhook"], json=content)
+        send_text(settings["discord"]["webhook"], e_traceback)
 
 
 def send_text(webhook, text, block=None):

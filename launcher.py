@@ -357,6 +357,7 @@ def remove_group():
         return redirect(url_for("send_msg"))
     else:
         form.select.choices = Recipients.get_groups_by_user(current_user.corps_id)
+        form.select.label = "Group to Remove:"
         return render_template("removegroup.html",
                                form=form,
                                profile_pic=current_user.profile_pic)

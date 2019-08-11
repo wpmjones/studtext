@@ -70,7 +70,7 @@ class AddRecipientForm(FlaskForm):
 
 
 class AddGroupForm(FlaskForm):
-    group = StringField("Group Name:", validators=[validators.DataRequired()])
+    grp = StringField("Group Name:", validators=[validators.DataRequired()])
 
 
 class GroupForm(FlaskForm):

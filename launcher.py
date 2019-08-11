@@ -335,10 +335,10 @@ def add_group():
     """This page allows a user to add a new group for their corps"""
     form = AddGroupForm(request.form)
     if request.method == "POST":
-        if request.form["group"]:
+        if form.grp.data:
             Recipients.add_group(form.grp.data, current_user.corps_id)
             flash(f"{form.grp.data} added to the database.")
-            redirect(url_for("send_msg"))
+            return redirect(url_for("send_msg"))
         else:
             flash("All form fields are required.", "Error")
     else:

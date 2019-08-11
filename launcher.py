@@ -199,9 +199,6 @@ def send_msg():
                 flash(f"Message sent to: {', '.join(names)}", "Success")
             else:
                 flash("All form fields are required.", "Error")
-        if "alert" in session:
-            flash(session["alert"])
-            session.pop("alert", None)
         return render_template("sendmsg.html",
                                form=form,
                                choices=form.group.choices,
@@ -346,8 +343,6 @@ def select_recipient():
     """This page allows the user to select a recipient for modification"""
     form = SingleSelectForm(request.form)
     if request.method == "POST":
-        logger.debug(form.select)
-        logger.debug(request.form["recipient"])
         selected_recipient = Recipients.get(int(request.form["recipient"]))
         session["new_name"] = selected_recipient.name
         session["new_phone"] = selected_recipient.phone
@@ -369,13 +364,15 @@ def manage_recipient():
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
+        Recipients.clear_groups(session['recipient_id'])
         for group_id in form.groups.data:
             try:
+                logger.debug(group_id)
                 Recipients.assign_groups(session['recipient_id'], group_id)
             except:
                 logger.exception("Failure on assign_groups")
         logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")
-        session["alert"] = (f"{session['new_name']} is now attached to the selected groups.", "Success")
+        flash(f"{session['new_name']} is now attached to the selected groups.", "Success")
         session.pop("recipient_id", None)
         session.pop("new_name", None)
         session.pop("new_phone", None)

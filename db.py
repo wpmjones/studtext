@@ -161,13 +161,13 @@ class Recipients:
         return recipient
 
     @staticmethod
-    def update(id, name, phone):
+    def update(id_, name, phone):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("UPDATE recipients "
                                "SET name = %s, phone = %s "
                                "WHERE id = %s",
-                               [name, phone, id])
+                               [name, phone, id_])
         cursor.close()
         conn.close()
         logger.info(f"Recipient {name} updated.")
@@ -190,13 +190,13 @@ class Recipients:
         conn.close()
 
     @staticmethod
-    def get_groups(user_id):
-        """This function pulls groups for a specified recipient"""
+    def get_groups_by_user(corps_id):
+        """This function pulls groups for a specified user"""
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT corps_id FROM users WHERE id = %s", [user_id])
-                corps_id = cursor.fetchone()[0]
-                cursor.execute("SELECT id, name FROM groups WHERE corps_id = %s", [corps_id])
+                cursor.execute("SELECT id, name FROM groups "
+                               "WHERE corps_id = %s "
+                               "AND active = 1", [corps_id])
                 groups = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -245,7 +245,9 @@ class Recipients:
         """This function removes a group from the database"""
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("DELETE FROM groups WHERE id = %s", [group_id])
+                cursor.execute("UPDATE groups "
+                               "SET active = 0 "
+                               "WHERE id = %s", [group_id])
         cursor.close()
         conn.close()
 

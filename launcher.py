@@ -174,7 +174,7 @@ def send_msg():
     # TODO set up a way to handle responses
     if current_user.is_approved:
         form = MessageForm(request.form)
-        form.group.choices = Recipients.get_groups(current_user.id)
+        form.group.choices = Recipients.get_groups_by_user(current_user.corps_id)
         if request.method == "POST":
             group = request.form["group"]
             message = request.form["msg"]
@@ -347,6 +347,21 @@ def add_group():
                                profile_pic=current_user.profile_pic)
 
 
+@app.route("/removegroup", methods=["GET", "POST"])
+@login_required
+def remove_group():
+    form = SingleSelectForm(request.form)
+    if request.method == "POST":
+        Recipients.remove_group(form.select.data)
+        flash(f"{form.select.data} removed from the database")
+        return redirect(url_for("send_msg"))
+    else:
+        form.select.choices = Recipients.get_groups_by_user(current_user.corps_id)
+        return render_template("removegroup.html",
+                               form=form,
+                               profile_pic=current_user.profile_pic)
+
+
 @app.route("/selectrecipient", methods=["GET", "POST"])
 @login_required
 def select_recipient():
@@ -395,7 +410,7 @@ def manage_recipient():
             selected = session["groups"]
         else:
             selected = None
-        form.groups.choices = Recipients.get_groups(current_user.id)
+        form.groups.choices = Recipients.get_groups_by_user(current_user.corps_id)
         return render_template("managerecipient.html",
                                form=form,
                                groups=form.groups.choices,

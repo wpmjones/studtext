@@ -74,7 +74,7 @@ class User(UserMixin):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = "UPDATE users SET is_approved = 1 WHERE id = %s"
-                cursor.execute(sql, user_id)
+                cursor.execute(sql, [user_id])
         cursor.close()
         conn.close()
 

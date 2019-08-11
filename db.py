@@ -136,10 +136,10 @@ class Recipients:
     def get(id_):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                cursor.mogrify("SELECT name, phone "
-                               "FROM recipients "
-                               "WHERE id = %s",
-                               [id_])
+                logger.deebug(cursor.mogrify("SELECT name, phone "
+                                             "FROM recipients "
+                                             "WHERE id = %s",
+                                             [id_]))
                 cursor.execute("SELECT name, phone "
                                "FROM recipients "
                                "WHERE id = %s",

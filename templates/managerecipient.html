@@ -12,7 +12,11 @@
                 <label for="groups">Groups:</label>
                 <select multiple class="form-control" id="groups" name="groups">
                     {% for group in groups %}
-                        <option value="{{ group[0] }}">{{ group[1] }}</option>
+                        {% if group[0] in selected: %}
+                            <option value="{{ group[0] }}" selected>{{ group[1] }}</option>
+                        {% else %}
+                            <option value="{{ group[0] }}">{{ group[1] }}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>

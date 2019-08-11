@@ -380,15 +380,22 @@ def manage_recipient():
         session.pop("recipient_id", None)
         session.pop("new_name", None)
         session.pop("new_phone", None)
+        if "groups" in session:
+            session.pop("groups", None)
         return redirect(url_for("send_msg"))
     else:
+        if "groups" in session:
+            selected = session["groups"]
+        else:
+            selected = None
         form.groups.choices = Recipients.get_groups(current_user.id)
         return render_template("managerecipient.html",
                                form=form,
                                groups=form.groups.choices,
                                profile_pic=current_user.profile_pic,
                                recipient=session["new_name"],
-                               phone=session["new_phone"])
+                               phone=session["new_phone"],
+                               selected=selected)
 
 
 @app.route("/help")

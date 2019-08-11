@@ -336,13 +336,16 @@ def add_group():
     form = AddGroupForm(request.form)
     if request.method == "POST":
         if request.form["group"]:
-            pass
+            Recipients.add_group(form.grp.data, current_user.corps_id)
+            flash(f"{form.grp.data} added to the database.")
+            redirect(url_for("send_msg"))
         else:
             flash("All form fields are required.", "Error")
     else:
         return render_template("addgroup.html",
                                form=form,
                                profile_pic=current_user.profile_pic)
+
 
 @app.route("/selectrecipient", methods=["GET", "POST"])
 @login_required

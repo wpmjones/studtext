@@ -187,7 +187,7 @@ class Recipients:
             with conn.cursor() as cursor:
                 cursor.execute("DELETE FROM recipient_groups WHERE recipient_id = %s", [recipient_id])
         cursor.close()
-        conn.close
+        conn.close()
 
     @staticmethod
     def get_groups(user_id):

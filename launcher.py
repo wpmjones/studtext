@@ -244,7 +244,6 @@ def approve_user():
     if current_user.is_admin:
         if request.method == "GET":
             # Approve this user in the database
-            logger.debug(request.args.get("uid"))
             User.approve(request.args.get("uid"))
             # Check if there are more unapproved users
             if len(User.get_unapproved()) > 0:

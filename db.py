@@ -178,10 +178,10 @@ class Recipients:
             with conn.cursor() as cursor:
                 logger.debug(cursor.mogrify("SELECT r.id, r.name, r.phone FROM recipients r "
                                             "INNER JOIN users u on r.corps_id = u.corps_id "
-                                            "WHERE u.id = %s", str(user_id)))
+                                            "WHERE u.id = %s", [user_id]))
                 cursor.execute("SELECT r.id, r.name, r.phone FROM recipients r "
                                "INNER JOIN users u on r.corps_id = u.corps_id "
-                               "WHERE u.id = %s", str(user_id))
+                               "WHERE u.id = %s", [user_id])
                 recipients = cursor.fetchall()
         cursor.close()
         conn.close()

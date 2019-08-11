@@ -112,6 +112,12 @@ class User(UserMixin):
 
 
 class Recipients:
+    def __init__(self, id_, name, phone, groups):
+        self.id = id_
+        self.name = name
+        self.phone = phone
+        self.groups = groups
+
     @staticmethod
     def create(name, phone):
         with get_db() as conn:
@@ -127,14 +133,29 @@ class Recipients:
         return new_id
 
     @staticmethod
-    def get(id):
+    def get(id_):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT name, phone "
                                "FROM recipients "
                                "WHERE id = $1",
-                               id)
+                               id_)
                 recipient = cursor.fetchone()
+                name = recipient["name"]
+                phone = recipient["phone"]
+                cursor.execute("SELECT group_ID "
+                               "FROM recipient_groups "
+                               "WHERE recipient_id = $1", id_)
+                fetch = cursor.fetchall()
+                groups = []
+                for row in fetch:
+                    groups.append(row[0])
+                recipient = Recipients(
+                    id_=id_,
+                    name=name,
+                    phone=phone,
+                    groups=groups
+                )
         cursor.close()
         conn.close()
         return recipient
@@ -176,9 +197,6 @@ class Recipients:
     def get_recipients(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                logger.debug(cursor.mogrify("SELECT r.id, r.name, r.phone FROM recipients r "
-                                            "INNER JOIN users u on r.corps_id = u.corps_id "
-                                            "WHERE u.id = %s", [user_id]))
                 cursor.execute("SELECT r.id, r.name, r.phone FROM recipients r "
                                "INNER JOIN users u on r.corps_id = u.corps_id "
                                "WHERE u.id = %s", [user_id])

@@ -346,8 +346,10 @@ def select_recipient():
     """This page allows the user to select a recipient for modification"""
     form = SingleSelectForm(request.form)
     if request.method == "POST":
-        session["recipient_id"] = request.form["recipient"]
-        # TODO get groups from db and add to session before redirect
+        selected_recipient = Recipients.get(form.select.data)
+        session["new_name"] = selected_recipient["name"]
+        session["phone"] = selected_recipient["phone"]
+        session["groups"] = selected_recipient["groups"]
         return redirect(url_for("manage_recipient"))
     else:
         form.select.choices = Recipients.get_recipients(current_user.id)

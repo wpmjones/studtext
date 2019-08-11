@@ -311,6 +311,8 @@ def add_recipient():
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
             # welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
+            logger.info(f"New recipient ({session['recipient_id']}) added to the database by "
+                        f"{current_user.name}({current_user.id})")
             return redirect(url_for("manage_recipient"))
         else:
             flash("All form fields are required.", "Error")
@@ -341,6 +343,8 @@ def add_group():
         if form.grp.data:
             Recipients.add_group(form.grp.data, current_user.corps_id)
             flash(f"{form.grp.data} added to the database.")
+            logger.info(f"New group ({form.grp.data}) added to the database by "
+                        f"{current_user.name}({current_user.id})")
             return redirect(url_for("send_msg"))
         else:
             flash("All form fields are required.", "Error")
@@ -357,6 +361,8 @@ def remove_group():
     if request.method == "POST":
         Recipients.remove_group(form.select.data)
         flash("Group removed from the database")
+        logger.info(f"Group ({form.select.data}) set as inactive in the database by "
+                    f"{current_user.name}({current_user.id})")
         return redirect(url_for("send_msg"))
     else:
         form.select.choices = Recipients.get_groups_by_user(current_user.corps_id)

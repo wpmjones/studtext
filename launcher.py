@@ -344,6 +344,7 @@ def select_recipient():
     form = SingleSelectForm(request.form)
     if request.method == "POST":
         selected_recipient = Recipients.get(int(request.form["recipient"]))
+        session["recipient_id"] = selected_recipient.id
         session["new_name"] = selected_recipient.name
         session["new_phone"] = selected_recipient.phone
         session["groups"] = selected_recipient.groups
@@ -364,11 +365,11 @@ def manage_recipient():
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:
             Recipients.update(session["recipient_id"], request.form["name"], request.form["phone"])
-        Recipients.clear_groups(session['recipient_id'])
+        Recipients.clear_groups(session["recipient_id"])
         for group_id in form.groups.data:
             try:
                 logger.debug(group_id)
-                Recipients.assign_groups(session['recipient_id'], group_id)
+                Recipients.assign_groups(session["recipient_id"], group_id)
             except:
                 logger.exception("Failure on assign_groups")
         logger.info(f"Added recipient {session['recipient_id']} to groups {form.groups.data}")

@@ -191,6 +191,7 @@ class Recipients:
 
     @staticmethod
     def get_groups(user_id):
+        """This function pulls groups for a specified recipient"""
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT corps_id FROM users WHERE id = %s", [user_id])
@@ -215,7 +216,7 @@ class Recipients:
 
     @staticmethod
     def get_recipients_by_group(group):
-        """This function pulls recipients for a specified group for sending messages"""
+        """This function pulls recipients for a specified group"""
         with get_db() as conn:
             with conn.cursor() as cursor:
                 sql = ("SELECT r.name, '+1' || r.phone as phone, r.id "
@@ -227,6 +228,26 @@ class Recipients:
         cursor.close()
         conn.close()
         return recipients
+
+    @staticmethod
+    def add_group(group_name, corps_id):
+        """This function adds a group to the database"""
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("INSERT INTO groups "
+                               "(name, corps_id) "
+                               "VALUES (%s, %s)", [group_name, corps_id])
+        cursor.close()
+        conn.close()
+
+    @staticmethod
+    def remove_group(group_id):
+        """This function removes a group from the database"""
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("DELETE FROM groups WHERE id = %s", [group_id])
+        cursor.close()
+        conn.close()
 
 
 class Messages:

@@ -64,21 +64,13 @@ class SingleSelectForm(FlaskForm):
     select = SelectField(coerce=int)
 
 
-class AddForm(FlaskForm):
-    name = StringField('Username', validators=[validators.DataRequired()])
-    phone = StringField('Phone', validators=[validators.DataRequired()])
+class AddRecipientForm(FlaskForm):
+    name = StringField("Username", validators=[validators.DataRequired()])
+    phone = StringField("Phone", validators=[validators.DataRequired()])
 
-    # def validate_phone(form, field):
-    #     if len(field.data) > 16:
-    #         raise ValidationError('Invalid phone number.')
-    #     try:
-    #         input_number = phonenumbers.parse(field.data)
-    #         if not (phonenumbers.is_valid_number(input_number)):
-    #             raise ValidationError('Invalid phone number.')
-    #     except:
-    #         input_number = phonenumbers.parse("+1"+field.data)
-    #         if not (phonenumbers.is_valid_number(input_number)):
-    #             raise ValidationError('Invalid phone number.')
+
+class AddGroupForm(FlaskForm):
+    group = StringField("Group Name:", validators=[validators.DataRequired()])
 
 
 class GroupForm(FlaskForm):
@@ -302,7 +294,7 @@ def menu():
 @login_required
 def add_recipient():
     """This page allows a user to add a new recipient for their corps"""
-    form = AddForm(request.form)
+    form = AddRecipientForm(request.form)
     if request.method == "POST":
         if request.form["phone"] and request.form["name"]:
             try:
@@ -336,6 +328,21 @@ def remove_recipient():
     else:
         form.select.choices = Recipients.get_recipients(current_user.id)
 
+
+@app.route("/addgroup", methods=["GET", "POST"])
+@login_required
+def add_group():
+    """This page allows a user to add a new group for their corps"""
+    form = AddGroupForm(request.form)
+    if request.method == "POST":
+        if request.form["group"]:
+            pass
+        else:
+            flash("All form fields are required.", "Error")
+    else:
+        return render_template("addgroup.html",
+                               form=form,
+                               profile_pic=current_user.profile_pic)
 
 @app.route("/selectrecipient", methods=["GET", "POST"])
 @login_required

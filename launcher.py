@@ -61,7 +61,7 @@ class CorpsForm(FlaskForm):
 
 
 class SingleSelectForm(FlaskForm):
-    select = SelectField(coerce=int)
+    select = SelectField()
 
 
 class AddForm(FlaskForm):
@@ -347,6 +347,8 @@ def select_recipient():
     logger.debug("Inside select")
     form = SingleSelectForm(request.form)
     if request.method == "POST":
+        logger.debug(form.select)
+        logger.debug(form.select.data)
         selected_recipient = Recipients.get(form.select.data)
         session["new_name"] = selected_recipient["name"]
         session["phone"] = selected_recipient["phone"]

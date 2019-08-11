@@ -365,7 +365,6 @@ def select_recipient():
 @login_required
 def manage_recipient():
     """This page allows the user to modify the selected recipient (name, phone, and groups)."""
-    logger.debug("Inside manage_recipient")
     form = GroupForm(request.form)
     if request.method == "POST":
         if request.form["name"] != session["new_name"] or request.form["phone"] != session["new_phone"]:

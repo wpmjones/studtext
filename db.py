@@ -180,6 +180,7 @@ class Recipients:
     def assign_groups(recipient_id, group_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
+                cursor.execute("DELETE FROM recipient_groups WHERE recipient_id = %s", [recipient_id])
                 cursor.execute("INSERT INTO recipient_groups (recipient_id, group_id) "
                                "VALUES (%s, %s)", [recipient_id, group_id])
         cursor.close()

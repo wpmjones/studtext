@@ -220,7 +220,7 @@ def user_select_corps():
         if "corps" in request.form:
             session["corps"] = User.link_corps(current_user.id, request.form["corps"])
             if not current_user.is_approved:
-                return redirect(url_for("userphone"))
+                return redirect(url_for("user_add_phone"))
             return redirect(url_for("send_msg"))
         else:
             flash("Something has gone wrong. Please try  refreshing the page.", "Error")

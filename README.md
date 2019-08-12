@@ -7,7 +7,7 @@ thanks to [this sweet tutorial](https://realpython.com/flask-google-login/) from
 
 ### To do:
 
-Finish up approval process for new users
+Allow user to change division/corps
 
-Allow users to update their address books
+Allow user to change phone number
 

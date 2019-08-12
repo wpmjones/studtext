@@ -66,7 +66,7 @@ def welcome_recipient(twilio, recipient_id, name, phone):
 
 def welcome_user(twilio, user_id, name, phone):
     body = (f"Welcome {name}! You are now approved to send Salvation Army text messages. "
-            f"If you have questions, go to https://satext.com/contact")
+            f"Start now at https://satext.com.")
     twilio_msg = twilio.messages.create(to=phone,
                                         from_=settings["twilio"]["phone_num"],
                                         body=body)

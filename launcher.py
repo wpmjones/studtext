@@ -240,6 +240,7 @@ def user_add_phone():
         try:
             number_info = twilio.lookups.phone_numbers(form.text_field.data).fetch()
             new_phone = number_info.phone_number[2:]
+            logger.debug(new_phone)
         except TwilioRestException:
             flash("Invalid phone number", "Error")
             return render_template("updatephone.html",

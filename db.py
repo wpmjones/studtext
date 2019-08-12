@@ -99,7 +99,7 @@ class User(UserMixin):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("UPDATE users SET phone = %s WHERE id = %s "
-                               "RETURNING name", [id_, phone])
+                               "RETURNING name", [phone, id_])
                 user_name = cursor.fetchone()[0]
         cursor.close()
         conn.close()

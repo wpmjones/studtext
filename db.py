@@ -14,10 +14,11 @@ def get_db():
 
 
 class User(UserMixin):
-    def __init__(self, id_, name, email, profile_pic, corps_id, is_admin, is_approved):
+    def __init__(self, id_, name, email, phone, profile_pic, corps_id, is_admin, is_approved):
         self.id = id_
         self.name = name
         self.email = email
+        self.phone = phone
         self.profile_pic = profile_pic
         self.corps_id = corps_id
         self.is_admin = is_admin
@@ -27,7 +28,8 @@ class User(UserMixin):
     def get(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                sql = f"SELECT * FROM users WHERE id = %s"
+                sql = (f"SELECT id, name, email, phone, profile_pic, corps_id, is_admin, is_approved "
+                       f"FROM users WHERE id = %s")
                 cursor.execute(sql, [user_id])
                 user = cursor.fetchone()
         cursor.close()
@@ -37,10 +39,11 @@ class User(UserMixin):
         user = User(id_=user[0],
                     name=user[1],
                     email=user[2],
-                    profile_pic=user[3],
-                    corps_id=user[4],
-                    is_admin=user[5],
-                    is_approved=user[6]
+                    phone=user[3],
+                    profile_pic=user[4],
+                    corps_id=user[5],
+                    is_admin=user[6],
+                    is_approved=user[7]
                     )
         return user
 
@@ -74,10 +77,33 @@ class User(UserMixin):
     def approve(user_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
-                sql = "UPDATE users SET is_approved = 1 WHERE id = %s"
-                cursor.execute(sql, [user_id])
+                cursor.execute("UPDATE users SET is_approved = 1 WHERE id = %s "
+                               "RETURNING id, name, email, phone, profile_pic, corps_id, is_admin, is_approved",
+                               [user_id])
+                fetch = cursor.fetchone()
+                approved_user = User(id_=fetch[0],
+                                     name=fetch[1],
+                                     email=fetch[2],
+                                     phone=fetch[3],
+                                     profile_pic=fetch[4],
+                                     corps_id=fetch[5],
+                                     is_admin=fetch[6],
+                                     is_approved=fetch[7]
+                                     )
         cursor.close()
         conn.close()
+        return approved_user
+
+    @staticmethod
+    def update_phone(id_, phone):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("UPDATE users SET phone = %s WHERE id = %s "
+                               "RETURNING name", [id_, phone])
+                user_name = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        logger.info(f"{user_name}({id_}) successfully updated their phone number to {phone}")
 
     @staticmethod
     def link_corps(id_, corps_id):

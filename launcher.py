@@ -2,7 +2,7 @@ import requests
 import json
 from loguru import logger
 from db import User, Recipients, Messages
-from utils import welcome_message, discord_log
+from utils import welcome_recipient, welcome_user, discord_log
 from flask import Flask, redirect, url_for, request, render_template, flash, session
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -58,6 +58,10 @@ class DivisionForm(FlaskForm):
 
 class CorpsForm(FlaskForm):
     corps = SelectField("Corps:", coerce=int)
+
+
+class SingleTextForm(FlaskForm):
+    text_field = StringField(validators=[validators.DataRequired()])
 
 
 class SingleSelectForm(FlaskForm):
@@ -162,6 +166,7 @@ def logout():
 @app.route("/protected")
 @login_required
 def protect():
+
     return (f"Logged in as: {current_user.name}<br />"
             f"Assigned corps: {current_user.corps_id}<br />"
             f"is_approved: {current_user.is_approved}")
@@ -215,8 +220,7 @@ def user_select_corps():
         if "corps" in request.form:
             session["corps"] = User.link_corps(current_user.id, request.form["corps"])
             if not current_user.is_approved:
-                return redirect(url_for("approval"))
-            session["alert"] = ("You are now linked to a corps and can send messages.", "Success")
+                return redirect(url_for("userphone"))
             return redirect(url_for("send_msg"))
         else:
             flash("Something has gone wrong. Please try  refreshing the page.", "Error")
@@ -224,6 +228,30 @@ def user_select_corps():
     return render_template("division.html",
                            form=form,
                            divisions=form.division.choices,
+                           profile_pic=current_user.profile_pic)
+
+
+@app.route("/userphone", methods=["GET", "POST"])
+@login_required
+def user_add_phone():
+    """This is where a user provides their phone number"""
+    form = SingleTextForm(request.form)
+    if request.method == "POST":
+        try:
+            number_info = twilio.lookups.phone_numbers(form.text_field.data).fetch()
+            new_phone = number_info.phone_number[2:]
+        except TwilioRestException:
+            flash("Invalid phone number", "Error")
+            return render_template("updatephone.html",
+                                   form=form,
+                                   profile_pic=current_user.profile_pic)
+        User.update_phone(current_user.id, new_phone)
+        if not current_user.is_approved:
+            return redirect(url_for("approval"))
+        return redirect(url_for("send_msg"))
+    form.text_field.label = "Phone:"
+    return render_template("updatephone.html",
+                           form=form,
                            profile_pic=current_user.profile_pic)
 
 
@@ -244,7 +272,8 @@ def approve_user():
     if current_user.is_admin:
         if request.method == "GET":
             # Approve this user in the database
-            User.approve(request.args.get("uid"))
+            approved_user = User.approve(request.args.get("uid"))
+            welcome_user(twilio, approved_user.id, approved_user.name, f"+1{approved_user.phone}")
             # Check if there are more unapproved users
             if len(User.get_unapproved()) > 0:
                 return redirect(url_for("approve"))
@@ -263,7 +292,7 @@ def approval():
     user_name = current_user.name
     corps_name = session["corps"]
     body = f"{user_name} has requested access for {corps_name}. https://satext.com/approve"
-    twilio_msg = twilio.messages.create(to="+16783797611",
+    twilio_msg = twilio.messages.create(to=settings["twilio"]["admin_num"],
                                         from_=settings["twilio"]["phone_num"],
                                         body=body)
     Messages.add_message(twilio_msg.sid, "SYSTEM", 1, 0, body)
@@ -310,7 +339,7 @@ def add_recipient():
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
-            # welcome_message(session["recipient_id"], request.form["name"], number_info.phone_number)
+            welcome_recipient(session["recipient_id"], request.form["name"], number_info.phone_number)
             logger.info(f"New recipient ({session['recipient_id']}) added to the database by "
                         f"{current_user.name}({current_user.id})")
             return redirect(url_for("manage_recipient"))

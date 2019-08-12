@@ -55,10 +55,19 @@ def send_text(webhook, text, block=None):
             requests.post(webhook, json=payload)
 
 
-def welcome_message(twilio, recipient_id, name, phone):
+def welcome_recipient(twilio, recipient_id, name, phone):
     body = (f"Welcome {name}! You've been added to a group for Salvation Army text messages. "
             f"If you have questions, talk to your corps officers. Text 'STOP' to cancel messages.")
     twilio_msg = twilio.messages.create(to=phone,
                                         from_=settings["twilio"]["phone_num"],
                                         body=body)
     Messages.add_message(twilio_msg.sid, "WELCOME", recipient_id, 0, body)
+
+
+def welcome_user(twilio, user_id, name, phone):
+    body = (f"Welcome {name}! You are now approved to send Salvation Army text messages. "
+            f"If you have questions, go to https://satext.com/contact")
+    twilio_msg = twilio.messages.create(to=phone,
+                                        from_=settings["twilio"]["phone_num"],
+                                        body=body)
+    Messages.add_message(twilio_msg.sid, user_id, 0, 0, body)

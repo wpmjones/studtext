@@ -7,7 +7,7 @@ from flask import Flask, redirect, url_for, request, render_template, flash, ses
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, SelectMultipleField, validators, ValidationError
+from wtforms import StringField, TextAreaField, SelectField, SelectMultipleField, validators
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from config import settings

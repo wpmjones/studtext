@@ -11,3 +11,4 @@ Allow user to change division/corps
 
 Allow user to change phone number
 
+Deal with responses from recipients

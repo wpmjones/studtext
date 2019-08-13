@@ -179,11 +179,7 @@ def protect():
     # return (f"Logged in as: {current_user.name}<br />"
     #         f"Assigned corps: {current_user.corps_id}<br />"
     #         f"is_approved: {current_user.is_approved}")
-    phone_nums = search_twilio_numbers(twilio, "301")
-    response_body = ""
-    for num in phone_nums:
-        response_body += num.friendly_name + "\n"
-    return response_body
+    return search_twilio_numbers(twilio, "301")
 
 
 @app.route("/send_msg", methods=["GET", "POST"])

@@ -91,7 +91,8 @@ def load_user(user_id):
 def incoming_sms():
     """Respond to incoming sms"""
     resp = MessagingResponse()
-    resp.message="At this time, SA Text does not support SMS responses. But in the future, we hope to do so!"
+    resp.message = "At this time, SA Text does not support SMS responses. But in the future, we hope to do so!"
+    logger.info("Message received")
     return str(resp)
 
 

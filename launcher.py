@@ -183,6 +183,7 @@ def protect():
     response_body = ""
     for num in phone_nums:
         response_body += num.friendly_name + "\n"
+    return response_body
 
 
 @app.route("/send_msg", methods=["GET", "POST"])

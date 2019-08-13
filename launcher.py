@@ -9,6 +9,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, SelectMultipleField, validators
 from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
 from twilio.base.exceptions import TwilioRestException
 from config import settings
 
@@ -84,6 +85,14 @@ class GroupForm(FlaskForm):
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
+
+
+@app.route("/sms", methods=["GET", "POST"])
+def incoming_sms():
+    """Respond to incoming sms"""
+    resp = MessagingResponse()
+    resp.message="At this time, SA Text does not support SMS responses. But in the future, we hope to do so!"
+    return str(resp)
 
 
 @app.route("/")

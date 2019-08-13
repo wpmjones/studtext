@@ -81,4 +81,4 @@ def search_twilio_numbers(twilio, area_code):
         local = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
                                                                 contains=f"******1865",
                                                                 limit=20)
-    return local
+    return tuple(local)

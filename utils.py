@@ -71,3 +71,14 @@ def welcome_user(twilio, user_id, name, phone):
                                         from_=settings["twilio"]["phone_num"],
                                         body=body)
     Messages.add_message(twilio_msg.sid, user_id, 0, 0, body)
+
+
+def search_twilio_numbers(twilio, area_code):
+    local = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
+                                                            contains=f"{area_code}***1865",
+                                                            limit=20)
+    if len(local) == 0:
+        local = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
+                                                                contains=f"******1865",
+                                                                limit=20)
+    return local

@@ -2,7 +2,7 @@ import requests
 import json
 from loguru import logger
 from db import User, Recipients, Messages
-from utils import welcome_recipient, welcome_user, discord_log
+from utils import welcome_recipient, welcome_user, discord_log, search_twilio_numbers
 from flask import Flask, redirect, url_for, request, render_template, flash, session
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -176,10 +176,10 @@ def logout():
 @app.route("/protected")
 @login_required
 def protect():
-
-    return (f"Logged in as: {current_user.name}<br />"
-            f"Assigned corps: {current_user.corps_id}<br />"
-            f"is_approved: {current_user.is_approved}")
+    # return (f"Logged in as: {current_user.name}<br />"
+    #         f"Assigned corps: {current_user.corps_id}<br />"
+    #         f"is_approved: {current_user.is_approved}")
+    return search_twilio_numbers(twilio, "301")
 
 
 @app.route("/send_msg", methods=["GET", "POST"])

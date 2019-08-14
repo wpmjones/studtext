@@ -136,13 +136,11 @@ class User(UserMixin):
                 corps = cursor.fetchone()
                 if corps[0]:
                     phone = corps[0]
-                    logger.debug(f"{phone} found in database")
                 else:
                     cursor.execute("SELECT substring(phone, 1, 3) as area_code "
                                    "FROM users WHERE corps_id = %s LIMIT 1", [corps_id])
                     area_code = cursor.fetchone()[0]
                     phone = get_new_number(area_code, corps[1])
-                    logger.debug(f"New phone is {phone}")
                     cursor.execute("UPDATE corps SET phone = %s WHERE id = %s", [phone[2:], corps_id])
         cursor.close()
         conn.close()

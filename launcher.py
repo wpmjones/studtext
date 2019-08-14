@@ -483,7 +483,14 @@ def app_help():
 def contact_us():
     form = MessageForm(request.form)
     if request.method == "POST":
-        pass
+        twilio_msg = twilio.messages.create(to=settings["twilio"]["admin_num"],
+                                            from_=settings["twilio"]["phone_num"],
+                                            body="New contact us form completed.")
+        Messages.add_message(twilio_msg.sid, current_user.id, 0, 0, form.msg.data)
+        flash("Your message has been received. We'll get back to you soon!")
+        logger.info(f"Contact form submitted by {current_user.name} ({current_user.id})")
+        # TODO create page for reviewing contact forms
+        return redirect(url_for("send_msg"))
     else:
         return render_template("contactus.html",
                                form=form,

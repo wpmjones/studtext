@@ -322,10 +322,8 @@ def menu():
         if request.form["actions"] == "2":
             return redirect(url_for("select_recipient"))
         if request.form["actions"] == "3":
-            # TODO create function for add_group
             return redirect(url_for("add_group"))
         if request.form["actions"] == "4":
-            # TODO create function for remove_group
             return redirect(url_for("remove_group"))
         flash("Please select an item from the list.", "Error")
     else:

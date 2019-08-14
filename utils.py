@@ -82,5 +82,6 @@ def get_new_number(area_code, corps_name):
                                                                limit=1)
     phone_number = nums[0].phone_number
     twilio.incoming_phone_numbers.create(phone_number=phone_number,
-                                         friendly_name=corps_name)
+                                         friendly_name=corps_name,
+                                         sms_url="https://satext.com/sms")
     return phone_number

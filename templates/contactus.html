@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Contacting as {{ user_name }}</h2></div>
+    <div class="container">
+        <form action="" method="post" role="form">
+            {{ form.csrf }}
+            <div class="form-group">
+                <label for="group">Group:</label>
+                <select class="form-control" id="group" name="group">
+                        <option value="0">System Administrator</option>
+                </select>
+                {{ form.msg.label }}
+                {{ form.msg(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-success">
+                Submit
+            </button>
+        </form>
+        <br />
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == "Success": %}
+                        <div class="alert alert-info">
+                            <strong>{{ category }}!</strong> {{ message }}
+                        </div>
+                    {% elif category == "Error": %}
+                        <div class="alert alert-warning">
+                            <strong>{{ category }}!</strong> {{ message }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="container">
+        <a href="/sendmsg" class="btn btn-danger" role="button">Back</a>
+    </div>
+{% endblock %}

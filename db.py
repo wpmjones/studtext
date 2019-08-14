@@ -2,6 +2,7 @@ import psycopg2
 from loguru import logger
 from flask_login import UserMixin
 from config import settings
+from utils import get_new_number
 
 
 def get_db():
@@ -126,6 +127,23 @@ class User(UserMixin):
         cursor.close()
         conn.close()
         return divisions
+
+    @staticmethod
+    def get_corps_phone(corps_id):
+        with get_db() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT '+1' || phone as phone FROM corps WHERE id = %s", [corps_id])
+                if cursor.rowcount > 0:
+                    phone = cursor.fetchone()[0]
+                else:
+                    cursor.execute("SELECT substring(phone, 1, 3) as area_code "
+                                   "FROM users WHERE corps_id = %s LIMIT 1", [corps_id])
+                    area_code = cursor.fetchone()[0]
+                    phone = get_new_number(area_code)
+                    cursor.execute("UPDATE corps SET phone = %s WHERE id = %s", [phone[2:], corps_id])
+        cursor.close()
+        conn.close()
+        return phone
 
     @staticmethod
     def get_corps(div_id):

@@ -1,6 +1,6 @@
 import requests
 from itertools import cycle
-from config import settings
+from config import settings, twilio
 from db import Messages
 
 
@@ -23,10 +23,10 @@ def discord_log(msg):
     requests.post(settings["discord"]["webhook"], json=payload)
     if record["exception"]:
         e_traceback = record["exception"].traceback
-        send_text(settings["discord"]["webhook"], e_traceback)
+        send_exception(settings["discord"]["webhook"], e_traceback)
 
 
-def send_text(webhook, text, block=None):
+def send_exception(webhook, text, block=None):
     """ Sends text ot channel, splitting if necessary """
     if len(text) < 1993:
         if block:
@@ -56,30 +56,32 @@ def send_text(webhook, text, block=None):
             requests.post(webhook, json=payload)
 
 
-def welcome_recipient(twilio, recipient_id, name, phone):
+def welcome_recipient(recipient_id, name, phone, from_phone):
     body = (f"Welcome {name}! You've been added to a group for Salvation Army text messages. "
             f"If you have questions, talk to your corps officers. Text 'STOP' to cancel messages.")
     twilio_msg = twilio.messages.create(to=phone,
-                                        from_=settings["twilio"]["phone_num"],
+                                        from_=from_phone,
                                         body=body)
     Messages.add_message(twilio_msg.sid, "WELCOME", recipient_id, 0, body)
 
 
-def welcome_user(twilio, user_id, name, phone):
+def welcome_user(user_id, name, phone, from_phone):
     body = (f"Welcome {name}! You are now approved to send Salvation Army text messages. "
             f"Start now at https://satext.com.")
     twilio_msg = twilio.messages.create(to=phone,
-                                        from_=settings["twilio"]["phone_num"],
+                                        from_=from_phone,
                                         body=body)
     Messages.add_message(twilio_msg.sid, user_id, 0, 0, body)
 
 
-def search_twilio_numbers(twilio, area_code):
+def get_new_number(area_code):
     nums = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
                                                            contains=f"{area_code}***1865",
-                                                           limit=20)
+                                                           limit=1)
     if len(nums) == 0:
         nums = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
                                                                contains=f"******1865",
-                                                               limit=20)
-    return nums[0].phone_number
+                                                               limit=1)
+    phone_number = nums[0].phone_number
+    twilio.incoming_phone_numbers.create(phone_number)
+    return phone_number

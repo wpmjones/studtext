@@ -2,22 +2,19 @@ import requests
 import json
 from loguru import logger
 from db import User, Recipients, Messages
-from utils import welcome_recipient, welcome_user, discord_log, search_twilio_numbers
+from utils import welcome_recipient, welcome_user, discord_log
 from flask import Flask, redirect, url_for, request, render_template, flash, session
 from oauthlib.oauth2 import WebApplicationClient
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, SelectMultipleField, validators
-from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.base.exceptions import TwilioRestException
-from config import settings
+from config import settings, twilio
 
 app = Flask(__name__)
 app.secret_key = settings["flask"]["key"]
 
-# Set up Twilio
-twilio = Client(settings["twilio"]["sid"], settings["twilio"]["token"])
 
 # Flask-Login
 login_manager = LoginManager()
@@ -176,10 +173,10 @@ def logout():
 @app.route("/protected")
 @login_required
 def protect():
-    # return (f"Logged in as: {current_user.name}<br />"
-    #         f"Assigned corps: {current_user.corps_id}<br />"
-    #         f"is_approved: {current_user.is_approved}")
-    return search_twilio_numbers(twilio, "301")
+    return (f"Logged in as: {current_user.name}<br />"
+            f"Assigned corps: {current_user.corps_id}<br />"
+            f"is_approved: {current_user.is_approved}")
+    # return search_twilio_numbers(twilio, "434")
 
 
 @app.route("/send_msg", methods=["GET", "POST"])
@@ -194,13 +191,15 @@ def send_msg():
             group = request.form["group"]
             message = request.form["msg"]
             if group and message:
+                if not session["corps_phone"]:
+                    session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
                 recipients = Recipients.get_recipients_by_group(group)
                 names = []
                 logger.debug(f"{message} sending to group id {group}")
                 for recipient in recipients:
                     names.append(recipient[0])
                     twilio_msg = twilio.messages.create(to=recipient[1],
-                                                        from_=settings["twilio"]["phone_num"],
+                                                        from_=session["corps_phone"],
                                                         body=message)
                     Messages.add_message(twilio_msg.sid, current_user.id, recipient[2], group, message)
                 flash(f"Message sent to: {', '.join(names)}", "Success")
@@ -284,7 +283,8 @@ def approve_user():
         if request.method == "GET":
             # Approve this user in the database
             approved_user = User.approve(request.args.get("uid"))
-            welcome_user(twilio, approved_user.id, approved_user.name, f"+1{approved_user.phone}")
+            corps_phone = User.get_corps_phone(approved_user.corps_id)
+            welcome_user(approved_user.id, approved_user.name, f"+1{approved_user.phone}", corps_phone)
             # Check if there are more unapproved users
             if len(User.get_unapproved()) > 0:
                 return redirect(url_for("approve"))
@@ -350,7 +350,10 @@ def add_recipient():
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
-            welcome_recipient(session["recipient_id"], request.form["name"], number_info.phone_number)
+            if not session["corps_phone"]:
+                session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
+            welcome_recipient(session["recipient_id"], request.form["name"],
+                              number_info.phone_number, session["corps_phone"])
             logger.info(f"New recipient ({session['recipient_id']}) added to the database by "
                         f"{current_user.name}({current_user.id})")
             return redirect(url_for("manage_recipient"))

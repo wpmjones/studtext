@@ -478,6 +478,13 @@ def app_help():
     return render_template("help.html")
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
+@login_required
 def contact_us():
-    return render_template("contactus.html")
+    form = MessageForm(request.form)
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("contactus.html",
+                               form=form,
+                               profile_pic=current_user.profile_pic)

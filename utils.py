@@ -1,6 +1,10 @@
 import requests
 from config import settings, twilio
-# from db import Messages
+from loguru import logger
+try:
+    from db import Messages
+except:
+    logger.exception("Failed Import")
 
 
 def discord_log(msg):

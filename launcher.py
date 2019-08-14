@@ -285,7 +285,7 @@ def approve_user():
             approved_user = User.approve(request.args.get("uid"))
             corps_phone = User.get_corps_phone(approved_user.corps_id)
             response = welcome_user(approved_user.id, approved_user.name, f"+1{approved_user.phone}", corps_phone)
-            Messages.add_message(response[0], response[1], response[2], response[3], response[4])
+            Messages.add_message(*response)
             # Check if there are more unapproved users
             if len(User.get_unapproved()) > 0:
                 return redirect(url_for("approve"))
@@ -353,7 +353,7 @@ def add_recipient():
                 session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
             response = welcome_recipient(session["recipient_id"], request.form["name"],
                                          number_info.phone_number, session["corps_phone"])
-            Messages.add_message(response[0], response[1], response[2], response[3], response[4])
+            Messages.add_message(*response)
             logger.info(f"New recipient ({session['recipient_id']}) added to the database by "
                         f"{current_user.name}({current_user.id})")
             return redirect(url_for("manage_recipient"))

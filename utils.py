@@ -1,7 +1,6 @@
 import requests
-from itertools import cycle
 from config import settings, twilio
-from db import Messages
+# from db import Messages
 
 
 def discord_log(msg):

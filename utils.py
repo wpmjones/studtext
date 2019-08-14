@@ -72,7 +72,7 @@ def welcome_user(user_id, name, phone, from_phone):
     return twilio_msg.sid, user_id, 0, 0, body
 
 
-def get_new_number(area_code):
+def get_new_number(area_code, corps_name):
     nums = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
                                                            contains=f"{area_code}***1865",
                                                            limit=1)
@@ -81,5 +81,6 @@ def get_new_number(area_code):
                                                                contains=f"******1865",
                                                                limit=1)
     phone_number = nums[0].phone_number
-    twilio.incoming_phone_numbers.create(phone_number)
+    twilio.incoming_phone_numbers.create(phone_number=phone_number,
+                                         friendly_name=corps_name)
     return phone_number

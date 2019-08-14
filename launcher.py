@@ -284,6 +284,7 @@ def approve_user():
             # Approve this user in the database
             approved_user = User.approve(request.args.get("uid"))
             corps_phone = User.get_corps_phone(approved_user.corps_id)
+            logger.debug(corps_phone)
             response = welcome_user(approved_user.id, approved_user.name, f"+1{approved_user.phone}", corps_phone)
             Messages.add_message(response)
             # Check if there are more unapproved users

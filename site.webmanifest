@@ -1,7 +1,7 @@
 {
     "name": "SA Text",
     "short_name": "SA Text",
-    "start_url": "https://satext.com/send_msg",
+    "start_url": "https://satext.com/",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

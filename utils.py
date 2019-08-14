@@ -1,10 +1,5 @@
 import requests
 from config import settings, twilio
-from loguru import logger
-try:
-    from db import Messages
-except:
-    logger.exception("Failed Import")
 
 
 def discord_log(msg):
@@ -65,7 +60,7 @@ def welcome_recipient(recipient_id, name, phone, from_phone):
     twilio_msg = twilio.messages.create(to=phone,
                                         from_=from_phone,
                                         body=body)
-    Messages.add_message(twilio_msg.sid, "WELCOME", recipient_id, 0, body)
+    return twilio_msg.sid, "WELCOME", recipient_id, 0, body
 
 
 def welcome_user(user_id, name, phone, from_phone):
@@ -74,7 +69,7 @@ def welcome_user(user_id, name, phone, from_phone):
     twilio_msg = twilio.messages.create(to=phone,
                                         from_=from_phone,
                                         body=body)
-    Messages.add_message(twilio_msg.sid, user_id, 0, 0, body)
+    return twilio_msg.sid, user_id, 0, 0, body
 
 
 def get_new_number(area_code):

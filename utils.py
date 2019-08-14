@@ -76,12 +76,10 @@ def welcome_user(twilio, user_id, name, phone):
 
 def search_twilio_numbers(twilio, area_code):
     nums = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
-                                                            contains=f"{area_code}***1865",
-                                                            limit=20)
+                                                           contains=f"{area_code}***1865",
+                                                           limit=20)
     if len(nums) == 0:
         nums = twilio.available_phone_numbers("US").local.list(sms_enabled=True,
-                                                                contains=f"******1865",
-                                                                limit=20)
-    iter_nums = iter(nums)
-    num = next(iter_nums)
-    return num.friendly_number
+                                                               contains=f"******1865",
+                                                               limit=20)
+    return nums[0].phone_number

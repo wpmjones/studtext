@@ -242,7 +242,8 @@ class Recipients:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT id, name FROM groups "
                                "WHERE corps_id = %s "
-                               "AND active = 1", [corps_id])
+                               "AND active = 1 "
+                               "ORDER BY name", [corps_id])
                 groups = cursor.fetchall()
         cursor.close()
         conn.close()

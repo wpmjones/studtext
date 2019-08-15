@@ -309,4 +309,3 @@ class Messages:
                 cursor.execute(sql, [sid, user_id, recipient_id, group_id, message])
         cursor.close()
         conn.close()
-        logger.info(f"Twilio Message {sid} added to database.")

@@ -462,7 +462,7 @@ def manage_recipient():
         if "groups" in session:
             selected = session["groups"]
         else:
-            selected = None
+            selected = ["None"]
         form.groups.choices = Recipients.get_groups_by_user(current_user.corps_id)
         return render_template("managerecipient.html",
                                form=form,

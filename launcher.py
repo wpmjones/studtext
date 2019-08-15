@@ -191,7 +191,7 @@ def send_msg():
             group = request.form["group"]
             message = request.form["msg"]
             if group and message:
-                if not session["corps_phone"]:
+                if "corps_phone" not in session:
                     session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
                 recipients = Recipients.get_recipients_by_group(group)
                 names = []

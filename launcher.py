@@ -349,7 +349,7 @@ def add_recipient():
                                        profile_pic=current_user.profile_pic)
             session["new_name"] = request.form["name"]
             session["recipient_id"] = Recipients.create(request.form["name"], session["new_phone"])
-            if not session["corps_phone"]:
+            if "corps_phone" not in session:
                 session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
             response = welcome_recipient(session["recipient_id"], request.form["name"],
                                          number_info.phone_number, session["corps_phone"])

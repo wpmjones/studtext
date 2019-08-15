@@ -165,13 +165,13 @@ class Recipients:
         self.groups = groups
 
     @staticmethod
-    def create(name, phone):
+    def create(name, phone, corps_id):
         with get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipients "
-                               "(name, phone) "
+                               "(name, phone, corps_id) "
                                "VALUES (%s, %s) "
-                               "RETURNING id", [name, phone])
+                               "RETURNING id", [name, phone, corps_id])
                 new_id = cursor.fetchone()[0]
         cursor.close()
         conn.close()

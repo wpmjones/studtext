@@ -35,6 +35,7 @@ class User(UserMixin):
                 user = cursor.fetchone()
         cursor.close()
         conn.close()
+        logger.debug(user)
         if not user:
             return None
         user = User(id_=user[0],

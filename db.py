@@ -170,7 +170,7 @@ class Recipients:
             with conn.cursor() as cursor:
                 cursor.execute("INSERT INTO recipients "
                                "(name, phone, corps_id) "
-                               "VALUES (%s, %s) "
+                               "VALUES (%s, %s, %s) "
                                "RETURNING id", [name, phone, corps_id])
                 new_id = cursor.fetchone()[0]
         cursor.close()

@@ -448,7 +448,6 @@ def manage_recipient():
         Recipients.clear_groups(session["recipient_id"])
         for group_id in form.groups.data:
             try:
-                logger.debug(group_id)
                 Recipients.assign_groups(session["recipient_id"], group_id)
             except:
                 logger.exception("Failure on assign_groups")

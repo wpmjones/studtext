@@ -1,16 +1,18 @@
-console.log('Start js')
 var el;
 
-function countCharacters(e)  {
-  console.log('Inside function')
-  var textEntered, countRemaining, counter;
-  textEntered = document.getElementById('msg').value;
-  counter = (160 - (textEntered.length));
-  console.log(counter)
-  countRemaining = document.getElementById('remaining');
-  countRemaining.textContent = counter + '/160 remaining';
+function count_characters(e)  {
+  var text_entered, text_length, count_remaining, num_msg, counter;
+  text_entered = document.getElementById('msg').value;
+  text_length = text_entered.length;
+  if (text_length <= 160) {
+    counter = (160 - text_length);
+  } else {
+    num_msg = parseInt(text_length/160) + 1;
+    counter = '(' + num_msg + ' messages) ' + (160 - (text_length % 160))
+  };
+  count_remaining = document.getElementById('remaining');
+  count_remaining.textContent = counter + '/160 remaining';
 }
 
 el = document.getElementById('msg');
-el.addEventListener('keyup', countCharacters, false);
-console.log('Event Listener created')
+el.addEventListener('keyup', count_characters, false);

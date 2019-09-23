@@ -4,7 +4,7 @@ var el;
 function countCharacters(e)  {
   console.log('Inside function')
   var textEntered, countRemaining, counter;
-  textEntered = document.getElementById('remaining').value;
+  textEntered = document.getElementById('msg').value;
   counter = (160 - (textEntered.length));
   console.log(counter)
   countRemaining = document.getElementById('remaining');

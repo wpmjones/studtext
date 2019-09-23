@@ -4,7 +4,7 @@ var el;
 function countCharacters(e)  {
   console.log('Inside function')
   var textEntered, countRemaining, counter;
-  textEntered = document.getElementById('tweet').value;
+  textEntered = document.getElementById('remaining').value;
   counter = (160 - (textEntered.length));
   console.log(counter)
   countRemaining = document.getElementById('remaining');
@@ -13,4 +13,4 @@ function countCharacters(e)  {
 
 el = document.getElementById('remaining');
 el.addEventListener('keyup', countCharacters, false);
-
+console.log('Event Listener created')

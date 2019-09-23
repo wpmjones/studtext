@@ -1,6 +1,8 @@
+console.log('Start js')
 var el;
 
 function countCharacters(e)  {
+  console.log('Inside function')
   var textEntered, countRemaining, counter;
   textEntered = document.getElementById('tweet').value;
   counter = (160 - (textEntered.length));

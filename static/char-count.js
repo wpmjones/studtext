@@ -11,6 +11,6 @@ function countCharacters(e)  {
   countRemaining.textContent = counter + '/160 remaining';
 }
 
-el = document.getElementById('remaining');
+el = document.getElementById('msg');
 el.addEventListener('keyup', countCharacters, false);
 console.log('Event Listener created')

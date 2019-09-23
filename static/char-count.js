@@ -4,6 +4,7 @@ function countCharacters(e)  {
   var textEntered, countRemaining, counter;
   textEntered = document.getElementById('tweet').value;
   counter = (160 - (textEntered.length));
+  console.log(counter)
   countRemaining = document.getElementById('remaining');
   countRemaining.textContent = counter + '/160 remaining';
 }

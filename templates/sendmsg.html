@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+    <script src="static/char-count.js"></script>
     <div class="container mt-2"><h2><img src="{{ profile_pic }}" style="height: 50px;" class="img-fluid rounded-circle mr-2">Sending as {{ user_name }}</h2></div>
     <div class="container">
         <form action="" method="post" role="form">
@@ -15,6 +16,7 @@
                 </select>
                 <label for="msg">Message:</label>
                 <textarea class="form-control" id="msg" name="msg" rows="3" placeholder="Type message here"></textarea>
+                <div class="text-right" id="remaining">160/160 remaining</div>
             </div>
             <button type="submit" class="btn btn-success">
                 Submit

@@ -30,7 +30,7 @@ google_discovery_url = "https://accounts.google.com/.well-known/openid-configura
 client = WebApplicationClient(google_client_id)
 
 # Send logs to discord
-logger.add(discord_log, level="DEBUG")
+logger.add(discord_log, level="INFO")
 
 # TODO can you add a bookmark link?
 
@@ -195,7 +195,7 @@ def send_msg():
                     session["corps_phone"] = User.get_corps_phone(current_user.corps_id)
                 recipients = Recipients.get_recipients_by_group(group)
                 names = []
-                logger.debug(f"{message} sending to group id {group}")
+                logger.info(f"{message} sending to group id {group}")
                 for recipient in recipients:
                     names.append(recipient[0])
                     twilio_msg = twilio.messages.create(to=recipient[1],
